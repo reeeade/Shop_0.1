@@ -136,7 +136,7 @@ def update_user():
     return "Let's update user information!"
 
 
-@app.route('shop/compare/<cmp_id>', methods=["GET", "PUT"])
+@app.route('/shop/compare/<cmp_id>', methods=["GET", "PUT"])
 def compare(cmp_id):
     if request.method == 'GET':
         return f"This is the comparison with id {cmp_id}"
