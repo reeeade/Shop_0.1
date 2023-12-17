@@ -1,0 +1,40 @@
+register [POST]
+login [POST]
+
+shop/items/<id> [get]
+shop/items/<id>/review [POST]
+shop/items/<id>/review [GET]
+shop/items/<id>/review/<review_id> [GET]
+shop/items/<id>/review/<review_id> [PUT]
+
+shop/items [GET] ?category=1&order=price&page=2
+shop/search [POST]
+
+shop/cart [GET]
+shop/cart [POST/PUT] shop/cart?item_id=54224&amount=2 [PUT/POST]
+shop/cart [DELETE] ?item=kjhaskj3
+shop/cart/order [GET] - заповнення форми
+shop/cart/order [POST] - оформлення замовлення
+
+shop/favorites/<list_id> [GET]
+shop/favorites/<list_id> [PUT]
+shop/favorites [post]
+
+shop/waitlist [GET]
+shop/waitlist [PUT]
+
+
+admin/items [post]
+admin/items [get]
+admin/items/<id> [get]
+admin/items/<id> [put]
+admin/items/<id> [delete]
+admin/orders [GET]
+admin/orders/<order_id> [PUT]
+admin/stat [GET]
+
+user [PUT]
+
+shop/compare/<cmp_id> [GET]
+shop/compare/<cmp_id> [PUT]
+shop/compare [POST]
