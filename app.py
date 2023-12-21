@@ -165,7 +165,12 @@ def get_put_delete_admin_items(item_id):
 
 @app.route('/admin/orders', methods=['GET'])
 def get_admin_orders():
-    return 'These are orders for the administrator!'
+    my_db = sqlite3.connect('identifier.sqlite')
+    my_cursor = my_db.cursor()
+    my_cursor.execute("SELECT * FROM orders")
+    orders = my_cursor.fetchall()
+    my_db.close()
+    return orders
 
 
 @app.route('/admin/orders/<order_id>', methods=['PUT'])
