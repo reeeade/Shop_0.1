@@ -151,7 +151,12 @@ def get_add_admin_items():
 @app.route('/admin/items/<item_id>', methods=['GET', 'PUT', 'DELETE'])
 def get_put_delete_admin_items(item_id):
     if request.method == 'GET':
-        return f'This is admin item with id {item_id}!'
+        my_db = sqlite3.connect('identifier.sqlite')
+        my_cursor = my_db.cursor()
+        my_cursor.execute("SELECT * FROM items WHERE item_id = ?", (item_id,))
+        items = my_cursor.fetchall()
+        my_db.close()
+        return items
     elif request.method == 'PUT':
         return f"Let's update item with id {item_id}"
     else:
