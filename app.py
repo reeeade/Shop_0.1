@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+import sqlite3
 
 app = Flask(__name__)
 
@@ -16,7 +17,12 @@ def login_user():
 
 @app.route('/shop/items/<item_id>', methods=['GET'])
 def get_items(item_id):
-    return 'This is the item you are looking for! Item id is ' + item_id
+    my_db = sqlite3.connect('identifier.sqlite')
+    my_cursor = my_db.cursor()
+    my_cursor.execute("SELECT * FROM items WHERE item_id = ?", (item_id,))
+    items = my_cursor.fetchall()
+    my_db.close()
+    return items
 
 
 @app.route('/shop/items/<item_id>/review', methods=['GET', 'POST'])
@@ -24,7 +30,12 @@ def get_post_review(item_id):
     if request.method == 'POST':
         return f'Ok, lets post your review for {item_id}!'
     else:
-        return f'Ok, lets get all review for {item_id}!'
+        my_db = sqlite3.connect('identifier.sqlite')
+        my_cursor = my_db.cursor()
+        my_cursor.execute("SELECT * FROM feedback WHERE item_id = ?", (item_id,))
+        feedback = my_cursor.fetchall()
+        my_db.close()
+        return feedback
 
 
 @app.route('/shop/items/<item_id>/review/<review_id>', methods=['GET', 'PUT'])
@@ -32,7 +43,13 @@ def get_put_current_review(item_id, review_id):
     if request.method == 'PUT':
         return f'Ok, lets put your review for {item_id} and {review_id}!'
     else:
-        return f'Ok, lets get your review for {item_id} and {review_id}!'
+        my_db = sqlite3.connect('identifier.sqlite')
+        my_cursor = my_db.cursor()
+        my_cursor.execute("SELECT * FROM feedback WHERE item_id = ? and feedback_id = ?", (item_id,
+                                                                                           review_id))
+        feedback = my_cursor.fetchall()
+        my_db.close()
+        return feedback
 
 
 @app.route('/shop/items', methods=['GET'])
@@ -40,7 +57,12 @@ def get_all_sorted_items():
     category = request.args.get('category')
     order = request.args.get('order')
     page = request.args.get('page')
-    return "category:" + category + " order:" + order + " page:" + page
+    my_db = sqlite3.connect('identifier.sqlite')
+    my_cursor = my_db.cursor()
+    my_cursor.execute(f"SELECT * FROM items WHERE category = ? ORDER BY {order} DESC ", (category,))
+    items = my_cursor.fetchall()
+    my_db.close()
+    return items
 
 
 @app.route('/shop/search', methods=['POST'])
@@ -50,7 +72,12 @@ def search_items():
 
 @app.route('/shop/cart', methods=['GET'])
 def get_cart():
-    return 'This is the your cart!'
+    my_db = sqlite3.connect('identifier.sqlite')
+    my_cursor = my_db.cursor()
+    my_cursor.execute("SELECT * FROM cart")
+    cart = my_cursor.fetchall()
+    my_db.close()
+    return cart
 
 
 @app.route('/shop/cart', methods=['POST', 'PUT'])
@@ -80,7 +107,12 @@ def get_post_cart_order():
 @app.route('/shop/favorites/<list_id>', methods=['GET', 'PUT'])
 def get_put_favorites(list_id):
     if request.method == 'GET':
-        return f'This is your favorite list with id {list_id}!'
+        my_db = sqlite3.connect('identifier.sqlite')
+        my_cursor = my_db.cursor()
+        my_cursor.execute("SELECT * FROM wishlist WHERE list_id = ?", (list_id,))
+        wishlist = my_cursor.fetchall()
+        my_db.close()
+        return wishlist
     else:
         return f"Let's change your favorite list with id {list_id}!"
 
@@ -93,7 +125,12 @@ def add_favorites():
 @app.route('/shop/waitlist', methods=['GET', 'PUT'])
 def get_put_waitlist():
     if request.method == 'GET':
-        return 'This is your waitlist!'
+        my_db = sqlite3.connect('identifier.sqlite')
+        my_cursor = my_db.cursor()
+        my_cursor.execute("SELECT * FROM waitlist")
+        waitlist = my_cursor.fetchall()
+        my_db.close()
+        return waitlist
     else:
         return "Let's change your waitlist!"
 
@@ -101,7 +138,12 @@ def get_put_waitlist():
 @app.route('/admin/items', methods=['GET', 'POST'])
 def get_add_admin_items():
     if request.method == 'GET':
-        return 'This is the admin items!'
+        my_db = sqlite3.connect('identifier.sqlite')
+        my_cursor = my_db.cursor()
+        my_cursor.execute("SELECT * FROM items")
+        items = my_cursor.fetchall()
+        my_db.close()
+        return items
     else:
         return "Let's add new items"
 

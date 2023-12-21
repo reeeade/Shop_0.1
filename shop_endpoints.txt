@@ -12,7 +12,7 @@ shop/search [POST]
 
 shop/cart [GET]
 shop/cart [POST/PUT] shop/cart?item_id=54224&amount=2 [PUT/POST]
-shop/cart [DELETE] ?item=kjhaskj3
+shop/cart [DELETE] ?item=3333
 shop/cart/order [GET] - заповнення форми
 shop/cart/order [POST] - оформлення замовлення
 
