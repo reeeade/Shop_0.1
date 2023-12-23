@@ -5,6 +5,47 @@ import sqlite3
 app = Flask(__name__)
 
 
+def dict_factory(cursor, row):
+    d = {}
+    for idx, col in enumerate(cursor.description):
+        d[col[0]] = row[idx]
+    return d
+
+
+class DbReader:
+    def __enter__(self):
+        self.my_db = sqlite3.connect('identifier.sqlite')
+        self.my_db.row_factory = dict_factory
+        self.my_cursor = self.my_db.cursor()
+        return self.my_cursor
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.my_db.commit()
+        self.my_db.close()
+
+
+def read_from_db(table_name, selectors=None):
+    with DbReader() as my_cursor:
+        cur_string = f"SELECT * FROM {table_name}"
+        if selectors:
+            cur_string += " WHERE "
+            conditions = []
+            for selector in selectors.keys():
+                conditions.append(f"'{selector} = ?'")
+            cur_string += " AND ".join(conditions)
+            my_cursor.execute(cur_string, selectors.value())
+        else:
+            my_cursor.execute(cur_string)
+        return my_cursor.fetchall()
+
+
+def write_to_db(table_name, data):
+    with DbReader() as my_cursor:
+        cur_string = (f"INSERT INTO {table_name} ({', '.join(data.keys())}) "
+                      f"VALUES ({', '.join(['?'] * len(data.keys()))})")
+        my_cursor.execute(cur_string, list(data.values()))
+
+
 @app.route('/register', methods=['POST'])
 def register_user():
     return 'Hello, user!'
@@ -56,7 +97,6 @@ def get_put_current_review(item_id, review_id):
 def get_all_sorted_items():
     category = request.args.get('category')
     order = request.args.get('order')
-    page = request.args.get('page')
     my_db = sqlite3.connect('identifier.sqlite')
     my_cursor = my_db.cursor()
     my_cursor.execute(f"SELECT * FROM items WHERE category = ? ORDER BY {order} DESC ", (category,))
