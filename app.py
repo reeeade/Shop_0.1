@@ -31,9 +31,9 @@ def read_from_db(table_name, selectors=None):
             cur_string += " WHERE "
             conditions = []
             for selector in selectors.keys():
-                conditions.append(f"'{selector} = ?'")
+                conditions.append(f"{selector} = ?")
             cur_string += " AND ".join(conditions)
-            my_cursor.execute(cur_string, selectors.value())
+            my_cursor.execute(cur_string, tuple(selectors.values()))
         else:
             my_cursor.execute(cur_string)
         return my_cursor.fetchall()
@@ -46,14 +46,44 @@ def write_to_db(table_name, data):
         my_cursor.execute(cur_string, list(data.values()))
 
 
+def update_db(table_name, data, condition):
+    with DbReader() as my_cursor:
+        set_clause = ', '.join([f'{key} = ?' for key in data.keys()])
+        where_clause = ' AND '.join([f'{key} = ?' for key in condition.keys()])
+        cur_string = f"UPDATE {table_name} SET {set_clause} WHERE {where_clause}"
+        set_values = list(data.values())
+        where_values = list(condition.values())
+        query_values = set_values + where_values
+        my_cursor.execute(cur_string, query_values)
+
+
+def delete_from_db(table_name, condition):
+    with DbReader() as my_cursor:
+        cur_string = f"DELETE FROM {table_name} WHERE {' AND '.join([f'{key} = ?' for key in condition.keys()])}"
+        my_cursor.execute(cur_string, list(condition.values()))
+
+
 @app.route('/register', methods=['POST'])
 def register_user():
-    return 'Hello, user!'
+    login = request.form.get('login')
+    password = request.form.get('password')
+    name = request.form.get('name')
+    surname = request.form.get('surname')
+    phone_number = request.form.get('phone_number')
+    write_to_db('users', {'login': login, 'password': password,
+                          'name': name, 'surname': surname, 'phone_number': phone_number})
+    return f'User {login} was registered.'
 
 
 @app.route('/login', methods=['POST'])
 def login_user():
-    return 'Welcome back, user!'
+    login = request.form.get('login')
+    password = request.form.get('password')
+    user = read_from_db('users', {'login': login, 'password': password})
+    if user:
+        return f'Logged in successfully. You are now logged in as {login}'
+    else:
+        return f'User does not exist.'
 
 
 @app.route('/shop/items/<item_id>', methods=['GET'])
@@ -82,15 +112,8 @@ def get_post_review(item_id):
 @app.route('/shop/items/<item_id>/review/<review_id>', methods=['GET', 'PUT'])
 def get_put_current_review(item_id, review_id):
     if request.method == 'PUT':
-        return f'Ok, lets put your review for {item_id} and {review_id}!'
-    else:
-        my_db = sqlite3.connect('identifier.sqlite')
-        my_cursor = my_db.cursor()
-        my_cursor.execute("SELECT * FROM feedback WHERE item_id = ? and feedback_id = ?", (item_id,
-                                                                                           review_id))
-        feedback = my_cursor.fetchall()
-        my_db.close()
-        return feedback
+        update_db('feedback', {'text': request.form.get('text')}, {'item_id': item_id, 'feedback_id': review_id})
+    return read_from_db('feedback', {"item_id": item_id, "feedback_id": review_id})
 
 
 @app.route('/shop/items', methods=['GET'])
@@ -132,8 +155,9 @@ def add_cart():
 
 @app.route('/shop/cart', methods=['DELETE'])
 def delete_cart():
-    item_id = request.args.get('item_id')
-    return f'Ok, lets delete cart item {item_id}'
+    delete_id = request.args.get('delete_id')
+    delete_from_db('cart', {'item_id': delete_id})
+    return read_from_db('cart')
 
 
 @app.route('/shop/cart/order', methods=['GET', 'POST'])
