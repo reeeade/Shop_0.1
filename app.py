@@ -88,158 +88,136 @@ def login_user():
 
 @app.route('/shop/items/<item_id>', methods=['GET'])
 def get_items(item_id):
-    my_db = sqlite3.connect('identifier.sqlite')
-    my_cursor = my_db.cursor()
-    my_cursor.execute("SELECT * FROM items WHERE item_id = ?", (item_id,))
-    items = my_cursor.fetchall()
-    my_db.close()
-    return items
+    return read_from_db('items', {'item_id': item_id})
 
 
 @app.route('/shop/items/<item_id>/review', methods=['GET', 'POST'])
 def get_post_review(item_id):
     if request.method == 'POST':
-        return f'Ok, lets post your review for {item_id}!'
-    else:
-        my_db = sqlite3.connect('identifier.sqlite')
-        my_cursor = my_db.cursor()
-        my_cursor.execute("SELECT * FROM feedback WHERE item_id = ?", (item_id,))
-        feedback = my_cursor.fetchall()
-        my_db.close()
-        return feedback
+        write_to_db('feedback', {'item_id': item_id, 'text': request.form.get('text'),
+                                 'rating': request.form.get('rating'), 'user_login': request.form.get('user_login')})
+    return read_from_db('feedback', {'item_id': item_id})
 
 
 @app.route('/shop/items/<item_id>/review/<review_id>', methods=['GET', 'PUT'])
 def get_put_current_review(item_id, review_id):
     if request.method == 'PUT':
-        update_db('feedback', {'text': request.form.get('text')}, {'item_id': item_id, 'feedback_id': review_id})
+        update_db('feedback', {'text': request.form.get('text')},
+                  {'item_id': item_id, 'feedback_id': review_id})
     return read_from_db('feedback', {"item_id": item_id, "feedback_id": review_id})
 
 
 @app.route('/shop/items', methods=['GET'])
 def get_all_sorted_items():
     category = request.args.get('category')
-    order = request.args.get('order')
-    my_db = sqlite3.connect('identifier.sqlite')
-    my_cursor = my_db.cursor()
-    my_cursor.execute(f"SELECT * FROM items WHERE category = ? ORDER BY {order} DESC ", (category,))
-    items = my_cursor.fetchall()
-    my_db.close()
-    return items
+    return read_from_db('items', {'category': category})
 
 
 @app.route('/shop/search', methods=['POST'])
 def search_items():
-    return 'This is the all items you are searching for!'
+    item_name = request.form.get('item_name')
+    item = read_from_db('items', {'name': item_name})
+    if item:
+        return item
+    else:
+        return 'Item not found'
 
 
 @app.route('/shop/cart', methods=['GET'])
 def get_cart():
-    my_db = sqlite3.connect('identifier.sqlite')
-    my_cursor = my_db.cursor()
-    my_cursor.execute("SELECT * FROM cart")
-    cart = my_cursor.fetchall()
-    my_db.close()
-    return cart
+    return read_from_db('cart')
 
 
 @app.route('/shop/cart', methods=['POST', 'PUT'])
 def add_cart():
     item_id = request.args.get('item_id')
-    amount = request.args.get('amount')
+    quantity = request.args.get('quantity')
     if request.method == 'POST':
-        return f'Ok, lets add in cart item {item_id}!'
+        write_to_db('cart', {'item_id': item_id, 'quantity': quantity,
+                             'user_login': request.form.get('user_login')})
     else:
-        return f'Ok, lets put amount {amount}!'
+        quantity = request.form.get('quantity')
+        update_db('cart', {'quantity': quantity}, {'item_id': item_id})
+    return read_from_db('cart')
 
 
 @app.route('/shop/cart', methods=['DELETE'])
 def delete_cart():
-    delete_id = request.args.get('delete_id')
-    delete_from_db('cart', {'item_id': delete_id})
+    delete_from_db('cart', {'item_id': request.args.get('item_id')})
     return read_from_db('cart')
 
 
 @app.route('/shop/cart/order', methods=['GET', 'POST'])
 def get_post_cart_order():
+    user_login = request.form.get('user_login')
+    address = request.form.get('address')
+    order_total_price = request.form.get('order_total_price')
+    status = request.form.get('status')
     if request.method == 'GET':
         return 'This is the order form!'
     else:
-        return "Let's place your order!"
+        write_to_db('orders', {'user_login': user_login, 'address': address,
+                               'order_total_price': order_total_price, 'status': status})
+    return read_from_db('orders')
 
 
 @app.route('/shop/favorites/<list_id>', methods=['GET', 'PUT'])
 def get_put_favorites(list_id):
-    if request.method == 'GET':
-        my_db = sqlite3.connect('identifier.sqlite')
-        my_cursor = my_db.cursor()
-        my_cursor.execute("SELECT * FROM wishlist WHERE list_id = ?", (list_id,))
-        wishlist = my_cursor.fetchall()
-        my_db.close()
-        return wishlist
-    else:
-        return f"Let's change your favorite list with id {list_id}!"
+    if request.method == 'PUT':
+        update_db('wishlist', {'list_name': request.form.get('list_name')},
+                  {'list_id': list_id})
+    return read_from_db('wishlist', {'list_id': list_id})
 
 
 @app.route('/shop/favorites', methods=['POST'])
 def add_favorites():
-    return "Let's add your favorites!"
+    write_to_db('wishlist', {'list_name': request.form.get('list_name'),
+                             'user_login': request.form.get('user_login'), 'item_id': request.form.get('item_id')})
+    return read_from_db('wishlist')
 
 
 @app.route('/shop/waitlist', methods=['GET', 'PUT'])
 def get_put_waitlist():
-    if request.method == 'GET':
-        my_db = sqlite3.connect('identifier.sqlite')
-        my_cursor = my_db.cursor()
-        my_cursor.execute("SELECT * FROM waitlist")
-        waitlist = my_cursor.fetchall()
-        my_db.close()
-        return waitlist
-    else:
-        return "Let's change your waitlist!"
+    if request.method == 'PUT':
+        update_db('waitlist', {'item_id': request.form.get('item_id')},
+                  {'user_login': request.form.get('user_login')})
+    return read_from_db('waitlist')
 
 
 @app.route('/admin/items', methods=['GET', 'POST'])
 def get_add_admin_items():
-    if request.method == 'GET':
-        my_db = sqlite3.connect('identifier.sqlite')
-        my_cursor = my_db.cursor()
-        my_cursor.execute("SELECT * FROM items")
-        items = my_cursor.fetchall()
-        my_db.close()
-        return items
-    else:
-        return "Let's add new items"
+    if request.method == 'POST':
+        write_to_db('items', {'name': request.form.get('name'),
+                              'description': request.form.get('description'),
+                              'price': request.form.get('price'),
+                              'status': request.form.get('status'),
+                              'category': request.form.get('category')})
+    return read_from_db('items')
 
 
 @app.route('/admin/items/<item_id>', methods=['GET', 'PUT', 'DELETE'])
 def get_put_delete_admin_items(item_id):
-    if request.method == 'GET':
-        my_db = sqlite3.connect('identifier.sqlite')
-        my_cursor = my_db.cursor()
-        my_cursor.execute("SELECT * FROM items WHERE item_id = ?", (item_id,))
-        items = my_cursor.fetchall()
-        my_db.close()
-        return items
-    elif request.method == 'PUT':
-        return f"Let's update item with id {item_id}"
-    else:
-        return f"Let's delete item with id {item_id}"
+    if request.method == 'PUT':
+        update_db('items', {'name': request.form.get('name'),
+                            'description': request.form.get('description'),
+                            'price': request.form.get('price'),
+                            'status': request.form.get('status'),
+                            'category': request.form.get('category')},
+                  {item_id: request.form.get('item_id')})
+    elif request.method == 'DELETE':
+        delete_from_db('items', {'item_id': item_id})
+    return read_from_db('items')
 
 
 @app.route('/admin/orders', methods=['GET'])
 def get_admin_orders():
-    my_db = sqlite3.connect('identifier.sqlite')
-    my_cursor = my_db.cursor()
-    my_cursor.execute("SELECT * FROM orders")
-    orders = my_cursor.fetchall()
-    my_db.close()
-    return orders
+    return read_from_db('orders')
 
 
 @app.route('/admin/orders/<order_id>', methods=['PUT'])
 def update_order(order_id):
-    return f"Let's update order with id {order_id}"
+    update_db('orders', {'status': request.form.get('status')}, {'order_id': order_id})
+    return read_from_db('orders')
 
 
 @app.route('/admin/stat', methods=['GET'])
@@ -249,7 +227,12 @@ def get_admin_stat():
 
 @app.route('/user', methods=['PUT'])
 def update_user():
-    return "Let's update user information!"
+    update_db('users', {'password': request.form.get('password'),
+                        'name': request.form.get('name'),
+                        'surname': request.form.get('surname'),
+                        'phone_number': request.form.get('phone_number')},
+              {'login': request.form.get('login')})
+    return read_from_db('users', {'login': request.form.get('login')})
 
 
 @app.route('/shop/compare/<cmp_id>', methods=["GET", "PUT"])
