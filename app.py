@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, render_template, redirect, session
 from flask import request
 import sqlite3
 
 app = Flask(__name__)
+app.secret_key = 'super_secret_key'
 
 
 def dict_factory(cursor, row):
@@ -63,8 +64,12 @@ def delete_from_db(table_name, condition):
         my_cursor.execute(cur_string, list(condition.values()))
 
 
-@app.route('/register', methods=['POST'])
+@app.route('/register', methods=['POST', 'GET'])
 def register_user():
+    if request.method == 'GET':
+        if 'login' in session:
+            return redirect('/user')
+        return render_template('register.html')
     login = request.form.get('login')
     password = request.form.get('password')
     name = request.form.get('name')
@@ -72,18 +77,29 @@ def register_user():
     phone_number = request.form.get('phone_number')
     write_to_db('users', {'login': login, 'password': password,
                           'name': name, 'surname': surname, 'phone_number': phone_number})
-    return f'User {login} was registered.'
+    return redirect('/login')
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST', 'GET'])
 def login_user():
+    if request.method == 'GET':
+        if 'login' in session:
+            return redirect('/user')
+        return render_template('login.html')
     login = request.form.get('login')
     password = request.form.get('password')
     user = read_from_db('users', {'login': login, 'password': password})
     if user:
-        return f'Logged in successfully. You are now logged in as {login}'
+        session['login'] = login
+        return redirect('/user')
     else:
-        return f'User does not exist.'
+        return render_template('login.html', error='Incorrect login or password')
+
+
+@app.route('/logout', methods=['GET'])
+def logout_user():
+    session.pop('login', None)
+    return redirect('/login')
 
 
 @app.route('/shop/items/<item_id>', methods=['GET'])
@@ -109,8 +125,12 @@ def get_put_current_review(item_id, review_id):
 
 @app.route('/shop/items', methods=['GET'])
 def get_all_sorted_items():
-    category = request.args.get('category')
-    return read_from_db('items', {'category': category})
+    user_login = session.get('login')
+    user = None
+    if user_login:
+        user = read_from_db('users', {'login': user_login})[0]
+    items = read_from_db('items')
+    return render_template('items.html', items=items, user=user)
 
 
 @app.route('/shop/search', methods=['POST'])
@@ -225,14 +245,28 @@ def get_admin_stat():
     return 'This is the admin stat!'
 
 
-@app.route('/user', methods=['PUT'])
+@app.route('/user', methods=['GET'])
+def get_user():
+    user_login = session.get('login')
+    current_user = read_from_db('users', {'login': user_login})[0]
+    return render_template('user_info.html', current_user=current_user)
+
+
+@app.route('/user', methods=['POST'])
 def update_user():
     update_db('users', {'password': request.form.get('password'),
                         'name': request.form.get('name'),
                         'surname': request.form.get('surname'),
                         'phone_number': request.form.get('phone_number')},
-              {'login': request.form.get('login')})
-    return read_from_db('users', {'login': request.form.get('login')})
+              {'login': session.get('login')})
+    return redirect('/user')
+
+
+@app.route('/user/update', methods=['GET'])
+def get_update_user():
+    user_login = session.get('login')
+    current_user = read_from_db('users', {'login': user_login})[0]
+    return render_template('update_user.html', current_user=current_user)
 
 
 @app.route('/shop/compare/<cmp_id>', methods=["GET", "PUT"])

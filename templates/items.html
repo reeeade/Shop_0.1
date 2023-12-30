@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Items</title>
+</head>
+{% if user %}
+    <p>Hello, {{ user['name'] }}</p>
+    <form action="/logout" method="GET">
+        <input type="submit" value="Logout">
+    </form>
+{% else %}
+    <p>Hello, Guest</p>
+    <form action="/login" method="GET">
+        <input type="submit" value="Log in">
+    </form>
+{% endif %}
+<body>
+{% for item in items %}
+<p>{{ item }}</p>
+{% endfor %}
+</body>
+</html>

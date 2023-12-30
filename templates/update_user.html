@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Update {{ current_user['name'] }}</title>
+</head>
+<p>Update your info</p>
+<body>
+    <form action="/user" method="POST">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ current_user['name'] }}">
+        <br>
+        <label for="surname">Surname:</label>
+        <input type="text" id="surname" name="surname" value="{{ current_user['surname'] }}">
+        <br>
+        <label for="phone_number">Phone Number:</label>
+        <input type="text" id="phone_number" name="phone_number" value="{{ current_user['phone_number'] }}">
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" value="{{ current_user['password'] }}">
+        <br>
+        <input type="submit" value="Update">
+    </form>
+</body>
+</html>
