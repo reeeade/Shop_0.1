@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart</title>
+</head>
+{% if current_user %}
+<p>Hello, {{ current_user }}</p>
+{% endif %}
+<body>
+{% if user_cart %}
+{% for item in user_cart %}
+<p>{{ item }}</p><form action="/shop/cart/delete" method="post">
+    <input type="hidden" name="item_id" value="{{ item.item_id }}">
+    <input type="submit" value="delete">
+</form>
+<br>
+{% endfor %}
+    {% else %}
+    <p style="color: red">Your cart is empty</p>
+{% endif %}
+</body>
+</html>

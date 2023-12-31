@@ -143,28 +143,43 @@ def search_items():
         return 'Item not found'
 
 
-@app.route('/shop/cart', methods=['GET'])
-def get_cart():
-    return read_from_db('cart')
+# @app.route('/shop/cart', methods=['GET'])
+# def get_cart():
+#     return read_from_db('cart')
 
 
-@app.route('/shop/cart', methods=['POST', 'PUT'])
+@app.route('/shop/cart', methods=['POST', 'GET'])
 def add_cart():
-    item_id = request.args.get('item_id')
-    quantity = request.args.get('quantity')
-    if request.method == 'POST':
-        write_to_db('cart', {'item_id': item_id, 'quantity': quantity,
-                             'user_login': request.form.get('user_login')})
+    current_user = session.get('login')
+    if current_user:
+        if request.method == 'POST':
+            item_id = request.form.get('item_id')
+            quantity = request.form.get('quantity')
+            item_in_cart = read_from_db('cart', {'item_id': item_id, 'user_login': current_user})
+            if item_in_cart:
+                new_quantity = int(item_in_cart[0]['quantity']) + int(quantity)
+                update_db('cart', {'quantity': new_quantity},
+                          {'item_id': item_id, 'user_login': current_user})
+            else:
+                write_to_db('cart', {'item_id': item_id,
+                                     'quantity': quantity,
+                                     'user_login': current_user})
+        user_cart = read_from_db('cart', {'user_login': current_user})
+        return render_template('cart.html', current_user=current_user, user_cart=user_cart)
     else:
-        quantity = request.form.get('quantity')
-        update_db('cart', {'quantity': quantity}, {'item_id': item_id})
-    return read_from_db('cart')
+        return redirect('/login')
 
 
-@app.route('/shop/cart', methods=['DELETE'])
+@app.route('/shop/cart/delete', methods=['POST'])
 def delete_cart():
-    delete_from_db('cart', {'item_id': request.args.get('item_id')})
-    return read_from_db('cart')
+    current_user = session.get('login')
+    if current_user:
+        if request.method == 'POST':
+            delete_from_db('cart', {'item_id': request.form.get('item_id'),
+                                    'user_login': current_user})
+        return redirect('/shop/cart')
+    else:
+        return redirect('/login')
 
 
 @app.route('/shop/cart/order', methods=['GET', 'POST'])
