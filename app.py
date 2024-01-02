@@ -25,18 +25,38 @@ class DbReader:
         self.my_db.close()
 
 
-def read_from_db(table_name, selectors=None):
+def read_from_db(table_name, where=None):
     with DbReader() as my_cursor:
         cur_string = f"SELECT * FROM {table_name}"
-        if selectors:
+        if where:
             cur_string += " WHERE "
             conditions = []
-            for selector in selectors.keys():
+            for selector in where.keys():
                 conditions.append(f"{selector} = ?")
             cur_string += " AND ".join(conditions)
-            my_cursor.execute(cur_string, tuple(selectors.values()))
+            my_cursor.execute(cur_string, tuple(where.values()))
         else:
             my_cursor.execute(cur_string)
+        return my_cursor.fetchall()
+
+
+def read_multiple_table(table_names: list, conditions: list, where=None):
+    # select * from items
+    # join item_status on items.status = item_status.status_id
+    # join category on items.category = category.category_id
+    with DbReader() as my_cursor:
+        cur_string = f"SELECT * FROM {table_names[0]}"
+        for one_table in table_names[1:]:
+            cur_string += f" JOIN {one_table} on "
+            cur_string += f"{conditions[table_names.index(one_table) - 1]}"
+        if where:
+            cur_string += " WHERE "
+            conditions = [f"{column} = ?" for column in where.keys()]
+            cur_string += " AND ".join(conditions)
+            my_cursor.execute(cur_string, tuple(where.values()))
+        else:
+            my_cursor.execute(cur_string)
+
         return my_cursor.fetchall()
 
 
@@ -129,7 +149,10 @@ def get_all_sorted_items():
     user = None
     if user_login:
         user = read_from_db('users', {'login': user_login})[0]
-    items = read_from_db('items')
+    # items = read_multiple_table(['items', 'item_status', 'category'],
+    #                             ['items.status = item_status.status_id', 'items.category = category.category_id'])
+    items = read_multiple_table(['items', 'item_status'],
+                                ['items.status = item_status.status_id'])
     return render_template('items.html', items=items, user=user)
 
 
@@ -164,8 +187,28 @@ def add_cart():
                 write_to_db('cart', {'item_id': item_id,
                                      'quantity': quantity,
                                      'user_login': current_user})
-        user_cart = read_from_db('cart', {'user_login': current_user})
-        return render_template('cart.html', current_user=current_user, user_cart=user_cart)
+        user_cart = read_multiple_table(['cart', 'items'],
+                                        ['cart.item_id = items.item_id'],
+                                        {'user_login': current_user})
+        user_info = read_from_db('users', {'login': current_user})[0]
+        for item in user_cart:
+            item['total_price'] = item['price'] * int(item['quantity'])
+        return render_template('cart.html',
+                               current_user=current_user,
+                               user_cart=user_cart,
+                               user_info=user_info)
+    else:
+        return redirect('/login')
+
+
+@app.route('/shop/cart/update', methods=['POST'])
+def update_cart():
+    current_user = session.get('login')
+    if current_user:
+        update_db('cart',
+                  {'quantity': request.form.get('quantity')},
+                  {'item_id': request.form.get('item_id'), 'user_login': current_user})
+        return redirect('/shop/cart')
     else:
         return redirect('/login')
 

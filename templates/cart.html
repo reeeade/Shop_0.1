@@ -5,12 +5,20 @@
     <title>Cart</title>
 </head>
 {% if current_user %}
-<p>Hello, {{ current_user }}</p>
+<p>Hello, {{ user_info.name }} {{ user_info.surname }}</p>
 {% endif %}
 <body>
 {% if user_cart %}
 {% for item in user_cart %}
-<p>{{ item }}</p><form action="/shop/cart/delete" method="post">
+<p>{{ item.name }} в количестве {{ item.quantity }} шт. Итоговая сумма по товару {{ item.total_price }} грн.</p>
+
+<form action="/shop/cart/update" method="post" style="display: inline-block;">
+    <label for="quantity">кол-во:</label>
+    <input type="hidden" name="item_id" value="{{ item.item_id }}">
+    <input type="number" id="quantity" name="quantity" value="{{ item.quantity }}">
+    <input type="submit" value="update">
+</form>
+<form action="/shop/cart/delete" method="post" style="display: inline-block;">
     <input type="hidden" name="item_id" value="{{ item.item_id }}">
     <input type="submit" value="delete">
 </form>

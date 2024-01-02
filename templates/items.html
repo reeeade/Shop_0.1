@@ -5,7 +5,7 @@
     <title>Items</title>
 </head>
 {% if user %}
-    <p>Hello, {{ user['name'] }}</p>
+    <p>Hello, {{ user['name'] }} {{ user['surname'] }}</p>
     <form action="/logout" method="GET">
         <input type="submit" value="Logout">
     </form>
@@ -17,7 +17,8 @@
 {% endif %}
 <body>
 {% for item in items %}
-<p>{{ item }}</p><form action="/shop/cart" method="post">
+<p>{{ item }}</p>
+<form action="/shop/cart" method="post">
     <input type="hidden" name="item_id" value="{{ item.item_id }}">
     <input type="number" name="quantity" value="1">
     <input type="submit" value="Add to cart">
