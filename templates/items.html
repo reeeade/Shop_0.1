@@ -17,12 +17,17 @@
 {% endif %}
 <body>
 {% for item in items %}
-<p>{{ item }}</p>
+<p>{{ item.name}}</p>
+<p>{{ item.description }}</p>
+<p>{{ item.status_name }}</p>
+<p>{{ item.category_name }}</p>
+<p>{{ item.price }} грн.</p>
 <form action="/shop/cart" method="post">
     <input type="hidden" name="item_id" value="{{ item.item_id }}">
     <input type="number" name="quantity" value="1">
     <input type="submit" value="Add to cart">
 </form>
+<br>
 {% endfor %}
 </body>
 </html>
