@@ -3,7 +3,7 @@ from database import Base
 
 
 class User(Base):
-    __table_name__ = 'users'
+    __tablename__ = 'users'
     login = Column(String(32), primary_key=True, nullable=False)
     password = Column(String(32), nullable=False)
     name = Column(String(32), nullable=False)
@@ -24,7 +24,7 @@ class User(Base):
 
 
 class Items(Base):
-    __table_name__ = 'items'
+    __tablename__ = 'items'
     item_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     name = Column(String(32), nullable=False)
     description = Column(String(100))
@@ -47,7 +47,7 @@ class Items(Base):
 
 
 class Cart(Base):
-    __table_name__ = 'cart'
+    __tablename__ = 'cart'
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     user_login = Column(String(32), ForeignKey('users.login'), nullable=False)
     item_id = Column(Integer, ForeignKey('items.item_id'), nullable=False)
@@ -66,7 +66,7 @@ class Cart(Base):
 
 
 class Feedback(Base):
-    __table_name__ = 'feedback'
+    __tablename__ = 'feedback'
     feedback_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     item_id = Column(Integer, ForeignKey('items.item_id'), nullable=False)
     text = Column(String(200))
@@ -87,7 +87,7 @@ class Feedback(Base):
 
 
 class Order(Base):
-    __table_name__ = 'orders'
+    __tablename__ = 'orders'
     order_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     user_login = Column(String(32), ForeignKey('users.login'), nullable=False)
     address = Column(String(100), nullable=False)
@@ -108,7 +108,7 @@ class Order(Base):
 
 
 class Wishlist(Base):
-    __table_name__ = 'wishlist'
+    __tablename__ = 'wishlist'
     list_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     list_name = Column(String(32), nullable=False)
     user_login = Column(String(32), ForeignKey('users.login'), nullable=False)
@@ -127,7 +127,7 @@ class Wishlist(Base):
 
 
 class Category(Base):
-    __table_name__ = 'category'
+    __tablename__ = 'category'
     category_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     category_name = Column(String(32), nullable=False)
 
@@ -142,14 +142,14 @@ class Category(Base):
 
 
 class ItemStatus(Base):
-    __table_name__ = 'item_status'
+    __tablename__ = 'item_status'
     status_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     status_name = Column(String(32), nullable=False)
 
     def to_dict(self):
         return {
-          'status_id': self.status_id,
-          'status_name': self.status_name
+            'status_id': self.status_id,
+            'status_name': self.status_name
         }
 
     def __repr__(self):
@@ -157,14 +157,14 @@ class ItemStatus(Base):
 
 
 class OrderStatus(Base):
-    __table_name__ = 'order_status'
+    __tablename__ = 'order_status'
     status_id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     status_name = Column(String(32), nullable=False)
 
     def to_dict(self):
         return {
-          'status_id': self.status_id,
-          'status_name': self.status_name
+            'status_id': self.status_id,
+            'status_name': self.status_name
         }
 
     def __repr__(self):
@@ -172,7 +172,7 @@ class OrderStatus(Base):
 
 
 class Waitlist(Base):
-    __table_name__ = 'waitlist'
+    __tablename__ = 'waitlist'
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     user_login = Column(String(32), ForeignKey('users.login'), nullable=False)
     item_id = Column(Integer, ForeignKey('items.item_id'), nullable=False)
@@ -189,7 +189,7 @@ class Waitlist(Base):
 
 
 class OrderItem(Base):
-    __table_name__ = 'order_items'
+    __tablename__ = 'order_items'
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     order_id = Column(Integer, ForeignKey('orders.order_id'), nullable=False)
     item_id = Column(Integer, ForeignKey('items.item_id'), nullable=False)

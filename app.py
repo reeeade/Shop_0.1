@@ -2,6 +2,9 @@ from flask import Flask, render_template, redirect, session
 from flask import request
 import sqlite3
 
+import database
+import models
+
 app = Flask(__name__)
 app.secret_key = 'super_secret_key'
 
@@ -95,8 +98,10 @@ def register_user():
     name = request.form.get('name')
     surname = request.form.get('surname')
     phone_number = request.form.get('phone_number')
-    write_to_db('users', {'login': login, 'password': password,
-                          'name': name, 'surname': surname, 'phone_number': phone_number})
+    database.init_db()
+    user = models.User(login=login, password=password, name=name, surname=surname, phone_number=phone_number)
+    database.db_session.add(user)
+    database.db_session.commit()
     return redirect('/login')
 
 
