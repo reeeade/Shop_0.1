@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b30bca4a-17d5-4bd3-8914-0c9f38138c8a" name="Changes" comment="Changed the cart endpoint&#10;Added the ability to add an item to the cart&#10;remove an item from the cart">
+    <list default="true" id="b30bca4a-17d5-4bd3-8914-0c9f38138c8a" name="Changes" comment="You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.">
+      <change afterPath="$PROJECT_DIR$/database.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/identifier.sqlite" beforeDir="false" afterPath="$PROJECT_DIR$/identifier.sqlite" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/items.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/items.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,6 +20,7 @@
       <list>
         <option value="Flask Main" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -130,7 +132,12 @@
       <workItem from="1704196190132" duration="18819000" />
       <workItem from="1704222598441" duration="5760000" />
       <workItem from="1704277062678" duration="2763000" />
-      <workItem from="1704296451684" duration="297000" />
+      <workItem from="1704296451684" duration="1114000" />
+      <workItem from="1704298157848" duration="221000" />
+      <workItem from="1704298391168" duration="148000" />
+      <workItem from="1704298551474" duration="165000" />
+      <workItem from="1704298728552" duration="439000" />
+      <workItem from="1704623972356" duration="5860000" />
     </task>
     <task id="LOCAL-00001" summary="Create the new project&#10;Add new Flask file &#10;Add .gitignore">
       <option name="closed" value="true" />
@@ -260,7 +267,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704228363118</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Finished modifying the shopping cart functionality and display of items">
+      <option name="closed" value="true" />
+      <created>1704296976332</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1704296976332</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -288,7 +303,8 @@
     <MESSAGE value="Added functions for modifying and deleting data" />
     <MESSAGE value="Finished the implementation of reading, writing, updating, deleting data depending on the method" />
     <MESSAGE value="Changed the cart endpoint&#10;Added the ability to add an item to the cart&#10;remove an item from the cart" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed the cart endpoint&#10;Added the ability to add an item to the cart&#10;remove an item from the cart" />
+    <MESSAGE value="Finished modifying the shopping cart functionality and display of items" />
+    <option name="LAST_COMMIT_MESSAGE" value="Finished modifying the shopping cart functionality and display of items" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Shop_0_1$Shop_0_1.coverage" NAME="Shop_0.1 Coverage Results" MODIFIED="1704296902353" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

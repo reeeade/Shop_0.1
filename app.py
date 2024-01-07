@@ -165,11 +165,6 @@ def search_items():
         return 'Item not found'
 
 
-# @app.route('/shop/cart', methods=['GET'])
-# def get_cart():
-#     return read_from_db('cart')
-
-
 @app.route('/shop/cart', methods=['POST', 'GET'])
 def add_cart():
     current_user = session.get('login')
