@@ -208,18 +208,19 @@ def add_cart():
                 new_item_in_cart = models.Cart(quantity=quantity, item_id=item_id, user_login=current_user)
                 database.db_session.add(new_item_in_cart)
                 database.db_session.commit()
-            return redirect(f'/shop/cart')
-        user_cart = (database.db_session.query(models.Cart, models.Items).
-                     join(models.Cart, models.Cart.item_id == models.Items.item_id).
-                     where(models.Cart.user_login == current_user).all())
-        user_cart = [{**item[0].to_dict(), **item[1].to_dict()} for item in user_cart]
-        user_info = models.User.query.filter_by(login=current_user).first()
-        for item in user_cart:
-            item['total_price'] = item['price'] * int(item['quantity'])
-        return render_template('cart.html',
-                               current_user=current_user,
-                               user_cart=user_cart,
-                               user_info=user_info)
+            return redirect('/shop/items')
+        else:
+            user_cart = (database.db_session.query(models.Cart, models.Items).
+                         join(models.Cart, models.Cart.item_id == models.Items.item_id).
+                         where(models.Cart.user_login == current_user).all())
+            user_cart = [{**item[0].to_dict(), **item[1].to_dict()} for item in user_cart]
+            user_info = models.User.query.filter_by(login=current_user).first()
+            for item in user_cart:
+                item['total_price'] = item['price'] * int(item['quantity'])
+            return render_template('cart.html',
+                                   current_user=current_user,
+                                   user_cart=user_cart,
+                                   user_info=user_info)
     else:
         return redirect('/login')
 

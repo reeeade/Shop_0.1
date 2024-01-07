@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b30bca4a-17d5-4bd3-8914-0c9f38138c8a" name="Changes" comment="Add models and database(main)">
+    <list default="true" id="b30bca4a-17d5-4bd3-8914-0c9f38138c8a" name="Changes" comment="Switched to the use of OPM">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/identifier.sqlite" beforeDir="false" afterPath="$PROJECT_DIR$/identifier.sqlite" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/items.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/items.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/user_info.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/user_info.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,7 +138,7 @@
       <workItem from="1704298391168" duration="148000" />
       <workItem from="1704298551474" duration="165000" />
       <workItem from="1704298728552" duration="439000" />
-      <workItem from="1704623972356" duration="19684000" />
+      <workItem from="1704623972356" duration="22088000" />
     </task>
     <task id="LOCAL-00001" summary="Create the new project&#10;Add new Flask file &#10;Add .gitignore">
       <option name="closed" value="true" />
@@ -291,7 +292,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704639641821</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Switched to the use of OPM">
+      <option name="closed" value="true" />
+      <created>1704652768811</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1704652768811</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -321,9 +330,10 @@
     <MESSAGE value="Changed the cart endpoint&#10;Added the ability to add an item to the cart&#10;remove an item from the cart" />
     <MESSAGE value="Finished modifying the shopping cart functionality and display of items" />
     <MESSAGE value="Add models and database(main)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add models and database(main)" />
+    <MESSAGE value="Switched to the use of OPM" />
+    <option name="LAST_COMMIT_MESSAGE" value="Switched to the use of OPM" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Shop_0_1$Shop_0_1.coverage" NAME="Shop_0.1 Coverage Results" MODIFIED="1704652539167" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Shop_0_1$Shop_0_1.coverage" NAME="Shop_0.1 Coverage Results" MODIFIED="1704656567565" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
