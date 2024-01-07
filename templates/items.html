@@ -6,11 +6,14 @@
 </head>
 {% if user %}
     <p>Hello, {{ user['name'] }} {{ user['surname'] }}</p>
-    <form action="/logout" method="GET" style="display: inline-block;">
-        <input type="submit" value="Logout">
+    <form  action="/logout" method="GET" style="display: inline-block;">
+        <input style="color: darkred" type="submit" value="Logout">
+    </form>
+    <form action="/user" method="GET" style="display: inline-block;">
+        <input style="color: darkblue" type="submit" value="Profile">
     </form>
     <form action="/shop/cart" method="GET" style="display: inline-block;">
-        <input type="submit" value="Cart">
+        <input style="color: chocolate" type="submit" value="Cart">
     </form>
 {% else %}
     <p>Hello, Guest</p>
@@ -20,15 +23,17 @@
 {% endif %}
 <body>
 {% for item in items %}
-<p>{{ item.name}}</p>
+<p style="font-weight: bold">{{ item.name}}</p>
 <p>{{ item.description }}</p>
 <p>{{ item.status_name }}</p>
 <p>{{ item.category_name }}</p>
 <p>{{ item.price }} грн.</p>
 <form action="/shop/cart" method="post">
     <input type="hidden" name="item_id" value="{{ item.item_id }}">
-    <input type="number" name="quantity" value="1">
-    <input type="submit" value="Add to cart">
+    <label>
+        <input type="number" name="quantity" value="1">
+    </label>
+    <input style="color: darkgreen" type="submit" value="Add to cart">
 </form>
 <br>
 {% endfor %}

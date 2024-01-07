@@ -7,6 +7,12 @@
 {% if current_user %}
 <p>Hello, {{ user_info.name }} {{ user_info.surname }}</p>
 {% endif %}
+<form action="/logout" method="GET" style="display: inline-block;">
+    <input style="color: darkred" type="submit" value="Logout">
+</form>
+<form action="/shop/items" method="GET" style="display: inline-block;">
+    <input style="color: darkorange" type="submit" value="Back">
+</form>
 <body>
 {% if user_cart %}
 {% for item in user_cart %}
@@ -16,11 +22,11 @@
     <label for="quantity">кол-во:</label>
     <input type="hidden" name="item_id" value="{{ item.item_id }}">
     <input type="number" id="quantity" name="quantity" value="{{ item.quantity }}">
-    <input type="submit" value="update">
+    <input style="color: darkgreen" type="submit" value="update">
 </form>
 <form action="/shop/cart/delete" method="post" style="display: inline-block;">
     <input type="hidden" name="item_id" value="{{ item.item_id }}">
-    <input type="submit" value="delete">
+    <input style="color: darkred" type="submit" value="delete">
 </form>
 <br>
 {% endfor %}

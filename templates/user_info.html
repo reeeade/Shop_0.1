@@ -17,12 +17,14 @@
     <span>Password: {{ current_user['password'] }}</span>
     <br>
     <form action="/user/update" method="GET" style="display: inline-block;">
-        <input type="submit" value="Update">
+        <input style="color: darkgreen" type="submit" value="Update">
     </form>
     <form action="/logout" method="GET" style="display: inline-block;">
-        <input type="submit" value="Logout">
+        <input style="color: darkred" type="submit" value="Logout">
     </form>
-
+    <form action="/shop/items" method="GET" style="display: inline-block;">
+        <input style="color: darkorange" type="submit" value="To shop">
+    </form>
 
 </body>
 </html>

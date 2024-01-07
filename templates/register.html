@@ -6,7 +6,7 @@
 </head>
 <body>
     <p>Enter you data</p>
-    <form action="/register" method="post">
+    <form action="/register" method="post" >
         <label for="login">Login:</label>
         <input type="text" name="login" id="login" placeholder="login" required>
         <br>
@@ -22,7 +22,10 @@
         <label for="phone_number">Phone Number:</label>
         <input type="text" name="phone_number" id="phone_number" placeholder="phone_number" required>
         <br>
-        <input type="submit" value="Register">
+        <input style="color: darkgreen" type="submit" value="Register">
+    </form>
+    <form action="/login" method="GET" style="display: inline-block">
+        <input style="color: darkgreen" type="submit" value="Back to login">
     </form>
 </body>
 </html>
