@@ -87,6 +87,11 @@ def delete_from_db(table_name, condition):
         my_cursor.execute(cur_string, list(condition.values()))
 
 
+@app.route('/', methods=['GET'])
+def index():
+    return redirect('/shop/items')
+
+
 @app.route('/register', methods=['POST', 'GET'])
 def register_user():
     if request.method == 'GET':
@@ -113,7 +118,8 @@ def login_user():
         return render_template('login.html')
     login = request.form.get('login')
     password = request.form.get('password')
-    user = read_from_db('users', {'login': login, 'password': password})
+    database.init_db()
+    user = models.User.query.filter_by(login=login, password=password).first()
     if user:
         session['login'] = login
         return redirect('/user')
@@ -129,20 +135,32 @@ def logout_user():
 
 @app.route('/shop/items/<item_id>', methods=['GET'])
 def get_items(item_id):
-    return read_from_db('items', {'item_id': item_id})
+    database.init_db()
+    item = models.Items.query.filter_by(item_id=item_id).first()
+    return render_template('item.html', item=item)
 
 
 @app.route('/shop/items/<item_id>/review', methods=['GET', 'POST'])
 def get_post_review(item_id):
+    database.init_db()
     if request.method == 'POST':
-        write_to_db('feedback', {'item_id': item_id, 'text': request.form.get('text'),
-                                 'rating': request.form.get('rating'), 'user_login': request.form.get('user_login')})
-    return read_from_db('feedback', {'item_id': item_id})
+        text = request.form.get('text')
+        rating = request.form.get('rating')
+        user_login = session.get('login')
+        if user_login:
+            new_feedback = models.Feedback(item_id=item_id, text=text, rating=rating, user_login=user_login)
+            database.db_session.add(new_feedback)
+            database.db_session.commit()
+
+        return redirect(f'/shop/items/{item_id}')
+    else:
+        item = models.Items.query.filter_by(item_id=item_id).first()
+        return render_template('review.html', item=item)
 
 
-@app.route('/shop/items/<item_id>/review/<review_id>', methods=['GET', 'PUT'])
+@app.route('/shop/items/<item_id>/review/<review_id>', methods=['GET', 'POST'])
 def get_put_current_review(item_id, review_id):
-    if request.method == 'PUT':
+    if request.method == 'POST':
         update_db('feedback', {'text': request.form.get('text')},
                   {'item_id': item_id, 'feedback_id': review_id})
     return read_from_db('feedback', {"item_id": item_id, "feedback_id": review_id})
@@ -153,11 +171,14 @@ def get_all_sorted_items():
     user_login = session.get('login')
     user = None
     if user_login:
-        user = read_from_db('users', {'login': user_login})[0]
-    items = read_multiple_table(['items', 'item_status', 'category'],
-                                [('items.status_id = item_status.status_id',),
-                                 ('items.category_id = category.category_id',)])
-    return render_template('items.html', items=items, user=user)
+        user = models.User.query.filter_by(login=user_login).first()
+
+    items = (database.db_session.query(models.Items, models.ItemStatus, models.Category).
+             join(models.ItemStatus, models.Items.status_id == models.ItemStatus.status_id).
+             join(models.Category, models.Items.category_id == models.Category.category_id)).all()
+    items_list = [{**item[0].to_dict(), **item[1].to_dict(), **item[2].to_dict()} for item in items]
+
+    return render_template('items.html', items=items_list, user=user)
 
 
 @app.route('/shop/search', methods=['POST'])
@@ -174,22 +195,25 @@ def search_items():
 def add_cart():
     current_user = session.get('login')
     if current_user:
+        database.init_db()
         if request.method == 'POST':
             item_id = request.form.get('item_id')
             quantity = request.form.get('quantity')
-            item_in_cart = read_from_db('cart', {'item_id': item_id, 'user_login': current_user})
+            item_in_cart = models.Cart.query.filter_by(user_login=current_user, item_id=item_id).first()
             if item_in_cart:
-                new_quantity = int(item_in_cart[0]['quantity']) + int(quantity)
-                update_db('cart', {'quantity': new_quantity},
-                          {'item_id': item_id, 'user_login': current_user})
+                new_quantity = int(item_in_cart.quantity) + int(quantity)
+                item_in_cart.quantity = new_quantity
+                database.db_session.commit()
             else:
-                write_to_db('cart', {'item_id': item_id,
-                                     'quantity': quantity,
-                                     'user_login': current_user})
-        user_cart = read_multiple_table(['cart', 'items'],
-                                        [('cart.item_id = items.item_id',)],
-                                        {'user_login': current_user})
-        user_info = read_from_db('users', {'login': current_user})[0]
+                new_item_in_cart = models.Cart(quantity=quantity, item_id=item_id, user_login=current_user)
+                database.db_session.add(new_item_in_cart)
+                database.db_session.commit()
+            return redirect(f'/shop/cart')
+        user_cart = (database.db_session.query(models.Cart, models.Items).
+                     join(models.Cart, models.Cart.item_id == models.Items.item_id).
+                     where(models.Cart.user_login == current_user).all())
+        user_cart = [{**item[0].to_dict(), **item[1].to_dict()} for item in user_cart]
+        user_info = models.User.query.filter_by(login=current_user).first()
         for item in user_cart:
             item['total_price'] = item['price'] * int(item['quantity'])
         return render_template('cart.html',
@@ -203,10 +227,13 @@ def add_cart():
 @app.route('/shop/cart/update', methods=['POST'])
 def update_cart():
     current_user = session.get('login')
+    quantity = request.form.get('quantity')
+    item_id = request.form.get('item_id')
     if current_user:
-        update_db('cart',
-                  {'quantity': request.form.get('quantity')},
-                  {'item_id': request.form.get('item_id'), 'user_login': current_user})
+        database.init_db()
+        item_in_cart = models.Cart.query.filter_by(user_login=current_user, item_id=item_id).first()
+        item_in_cart.quantity = int(quantity)
+        database.db_session.commit()
         return redirect('/shop/cart')
     else:
         return redirect('/login')
@@ -215,10 +242,13 @@ def update_cart():
 @app.route('/shop/cart/delete', methods=['POST'])
 def delete_cart():
     current_user = session.get('login')
+    item_id = request.form.get('item_id')
     if current_user:
         if request.method == 'POST':
-            delete_from_db('cart', {'item_id': request.form.get('item_id'),
-                                    'user_login': current_user})
+            database.init_db()
+            deleted_item = models.Cart.query.filter_by(user_login=current_user, item_id=item_id).first()
+            database.db_session.delete(deleted_item)
+            database.db_session.commit()
         return redirect('/shop/cart')
     else:
         return redirect('/login')
@@ -305,24 +335,32 @@ def get_admin_stat():
 @app.route('/user', methods=['GET'])
 def get_user():
     user_login = session.get('login')
-    current_user = read_from_db('users', {'login': user_login})[0]
+    database.init_db()
+    current_user = models.User.query.filter_by(login=user_login).first()
     return render_template('user_info.html', current_user=current_user)
 
 
 @app.route('/user', methods=['POST'])
 def update_user():
-    update_db('users', {'password': request.form.get('password'),
-                        'name': request.form.get('name'),
-                        'surname': request.form.get('surname'),
-                        'phone_number': request.form.get('phone_number')},
-              {'login': session.get('login')})
+    current_user = session.get('login')
+    password = request.form.get('password')
+    name = request.form.get('name')
+    surname = request.form.get('surname')
+    phone_number = request.form.get('phone_number')
+    database.init_db()
+    user = models.User.query.filter_by(login=current_user).first()
+    user.password = password
+    user.name = name
+    user.surname = surname
+    user.phone_number = phone_number
+    database.db_session.commit()
     return redirect('/user')
 
 
 @app.route('/user/update', methods=['GET'])
 def get_update_user():
     user_login = session.get('login')
-    current_user = read_from_db('users', {'login': user_login})[0]
+    current_user = models.User.query.filter_by(login=user_login).first()
     return render_template('update_user.html', current_user=current_user)
 
 
