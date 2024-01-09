@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, session
 from flask import request
 import sqlite3
+from datetime import datetime
 
 import database
 import models
@@ -103,8 +104,12 @@ def register_user():
     name = request.form.get('name')
     surname = request.form.get('surname')
     phone_number = request.form.get('phone_number')
+    email = request.form.get('email')
+    birthday_str = request.form.get('birthday')
+    birthday = datetime.strptime(birthday_str, '%Y-%m-%d')
     database.init_db()
-    user = models.User(login=login, password=password, name=name, surname=surname, phone_number=phone_number)
+    user = models.User(login=login, password=password, name=name, surname=surname,
+                       phone_number=phone_number, email=email, birth_date=birthday)
     database.db_session.add(user)
     database.db_session.commit()
     return redirect('/login')
@@ -348,12 +353,17 @@ def update_user():
     name = request.form.get('name')
     surname = request.form.get('surname')
     phone_number = request.form.get('phone_number')
+    birthday_str = request.form.get('birthday')
+    email = request.form.get('email')
+    birthday = datetime.strptime(birthday_str, '%Y-%m-%d')
     database.init_db()
     user = models.User.query.filter_by(login=current_user).first()
     user.password = password
     user.name = name
     user.surname = surname
     user.phone_number = phone_number
+    user.email = email
+    user.birth_date = birthday
     database.db_session.commit()
     return redirect('/user')
 

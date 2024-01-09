@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey, Date
 from database import Base
 
 
@@ -9,6 +9,8 @@ class User(Base):
     name = Column(String(32), nullable=False)
     surname = Column(String(32), nullable=False)
     phone_number = Column(String(32), nullable=False)
+    email = Column(String(32), nullable=True)
+    birth_date = Column(Date, nullable=True)
 
     def to_dict(self):
         return {
