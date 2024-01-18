@@ -1,0 +1,20 @@
+services:
+  server:
+    build:
+      context: .
+    ports:
+      - 5000:5000
+    environment:
+      - POSTGRES_PASSWORD=mypassword
+    depends_on:
+      - db
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    environment:
+      - POSTGRES_DB=example
+      - POSTGRES_PASSWORD=mypassword
+    expose:
+      - 5432:5432
+    hostname: db
