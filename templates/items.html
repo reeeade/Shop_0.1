@@ -22,20 +22,79 @@
     </form>
 {% endif %}
 <body>
-{% for item in items %}
-<p style="font-weight: bold">{{ item.name}}</p>
-<p>{{ item.description }}</p>
-<p>{{ item.status_name }}</p>
-<p>{{ item.category_name }}</p>
-<p>{{ item.price }} грн.</p>
-<form action="/shop/cart" method="post">
-    <input type="hidden" name="item_id" value="{{ item.item_id }}">
-    <label>
-        <input type="number" name="quantity" value="1">
-    </label>
-    <input style="color: darkgreen" type="submit" value="Add to cart">
-</form>
+<form action="">
+    <style>
+    .column {
+        display: inline-block;
+        margin-right: 20px; /* Добавьте отступ между колонками, если нужно */
+    }
+</style>
+
+<div class="column">
+    <p>Choose a status</p>
+    {% for status in statuses %}
+        <label>
+            <input type="checkbox" id="status_name" name="status_name" value="{{ status.status_name }}">
+            {{ status.status_name }}
+        </label>
+        <br>
+    {% endfor %}
+</div>
+
+<div class="column">
+    <p>Choose a category</p>
+    {% for category in categories %}
+        <label>
+            <input type="checkbox" id="category_name" name="category_name" value="{{ category.category_name }}">
+            {{ category.category_name }}
+        </label>
+        <br>
+    {% endfor %}
+</div>
 <br>
-{% endfor %}
+    <label for="min_price"></label><input type="number" id="min_price" name="min_price" placeholder="Min">
+    <label for="max_price"></label><input type="number" id="max_price" name="max_price" placeholder="Max">
+    <input type="submit" value="Filter">
+</form>
+<style>
+    .item-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .item {
+        margin: 2.5%; /* Уменьшил отступ между элементами */
+        padding: 10px; /* Добавил небольшие внутренние отступы для улучшенного визуального восприятия */
+        box-sizing: border-box; /* чтобы учесть отступы и границы при расчете ширины */
+        border: 1px solid #ddd; /* Добавил границу для разделения элементов */
+        text-align: center; /* Выравниваем текст по центру */
+    }
+
+    .item p {
+        margin: 5px 0; /* Уменьшил отступы вокруг текстовых элементов */
+    }
+</style>
+
+<div class="item-container">
+    {% for item in items %}
+        <div class="item">
+            <p style="font-weight: bold; margin: 0;">{{ item.name }}</p>
+            <p>{{ item.description }}</p>
+            <p>{{ item.status_name }}</p>
+            <p>{{ item.category_name }}</p>
+            <p>{{ item.price }} грн.</p>
+            <form action="/shop/cart" method="post">
+                <input type="hidden" name="item_id" value="{{ item.item_id }}">
+                <label>
+                    <input type="number" name="quantity" value="1">
+                </label>
+                <input style="color: darkgreen" type="submit" value="Add to cart">
+            </form>
+        </div>
+    {% endfor %}
+</div>
+
+
+
 </body>
 </html>

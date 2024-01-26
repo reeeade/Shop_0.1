@@ -177,13 +177,23 @@ def get_all_sorted_items():
     user = None
     if user_login:
         user = models.User.query.filter_by(login=user_login).first()
-
     items = (database.db_session.query(models.Items, models.ItemStatus, models.Category).
              join(models.ItemStatus, models.Items.status_id == models.ItemStatus.status_id).
-             join(models.Category, models.Items.category_id == models.Category.category_id)).all()
+             join(models.Category, models.Items.category_id == models.Category.category_id))
+    categories = models.Category.query.order_by(models.Category.category_name).all()
+    statuses = models.ItemStatus.query.order_by(models.ItemStatus.status_name).all()
+    query_string = request.query_string.decode()
+    if query_string:
+        query_categories = request.args.getlist('category_name')
+        query_statuses = request.args.getlist('status_name')
+        if query_categories:
+            items = items.filter(models.Category.category_name.in_(query_categories))
+        if query_statuses:
+            items = items.filter(models.ItemStatus.status_name.in_(query_statuses))
+    items = items.all()
     items_list = [{**item[0].to_dict(), **item[1].to_dict(), **item[2].to_dict()} for item in items]
 
-    return render_template('items.html', items=items_list, user=user)
+    return render_template('items.html', items=items_list, user=user, categories=categories, statuses=statuses)
 
 
 @app.route('/shop/search', methods=['POST'])

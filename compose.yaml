@@ -12,6 +12,7 @@ services:
       - DB_PORT=5432
     depends_on:
       - db
+    command: python app.py
   db:
     image: postgres
     restart: always
