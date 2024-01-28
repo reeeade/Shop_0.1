@@ -285,16 +285,30 @@ def delete_cart():
 
 @app.route('/shop/cart/order', methods=['GET', 'POST'])
 def get_post_cart_order():
-    user_login = request.form.get('user_login')
-    address = request.form.get('address')
-    order_total_price = request.form.get('order_total_price')
-    status = request.form.get('status')
-    if request.method == 'GET':
-        return 'This is the order form!'
+    user_login = session.get('login')
+    database.init_db()
+    user_cart = (database.db_session.query(models.Cart, models.Items).
+                 join(models.Cart, models.Cart.item_id == models.Items.item_id).
+                 where(models.Cart.user_login == user_login).all())
+    user_cart = [{**item[0].to_dict(), **item[1].to_dict()} for item in user_cart]
+    order_total_price = 0
+    for item in user_cart:
+        order_total_price += int(item['price']) * int(item['quantity'])
+    if request.method == 'POST':
+        address = request.form.get('address')
+        new_order = models.Order(user_login=user_login, address=address, order_total_price=order_total_price, status=1)
+        database.db_session.add(new_order)
+        database.db_session.commit()
+        message = 'Your order has been placed successfully!'
+        deleted_cart = models.Cart.query.filter_by(user_login=user_login).all()
+        for cart_item in deleted_cart:
+            database.db_session.delete(cart_item)
+        database.db_session.commit()
+        return render_template('cart.html', login=user_login, message2=message)
     else:
-        write_to_db('orders', {'user_login': user_login, 'address': address,
-                               'order_total_price': order_total_price, 'status': status})
-    return read_from_db('orders')
+        return render_template('order.html', login=user_login,
+                               total_price=order_total_price)
+
 
 
 @app.route('/shop/favorites/<list_id>', methods=['GET', 'PUT'])
@@ -413,7 +427,6 @@ def compare(cmp_id):
 
 @app.route('/shop/compare', methods=['POST', 'GET'])
 def add_compare():
-
     user_cmp = models.CompareItems.query.distinct(models.CompareItems.id).filter(models.CompareItems.user_login ==
                                                                                  session.get('login')).all()
     user_cmp2 = (database.db_session.query(models.CompareItems).distinct(models.CompareItems.id).filter

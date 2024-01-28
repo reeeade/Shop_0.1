@@ -118,6 +118,8 @@
 
 <div class="cart-header">
     Your Cart
+    <br>
+    {% if message2 %} {{ message2 }}{% endif %}
 </div>
 
 {% if user_cart %}
@@ -149,7 +151,7 @@
         Total: {{ total_cart_amount }} грн.
     </div>
     <div class="cart-buttons">
-    <form action="/shop/checkout" method="GET" style="display: inline-block;">
+    <form action="/shop/cart/order" method="GET" style="display: inline-block;">
         <input type="submit" class="cart-button wider-button" style="background-color: darkblue;" value="Proceed to Checkout">
     </form>
     </div>

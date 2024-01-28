@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            width: 150px;
+            padding: 10px;
+            border: 1px solid darkgreen;
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 2px;
+            font-weight: bold;
+            color: white;
+            background-color: darkgreen;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #006400;
+        }
+    </style>
+</head>
+<body>
+    <p>Order placement for {{ login }}</p>
+    <p>Total order: {{ total_price }}</p>
+    <form action="/shop/cart/order" method="POST">
+        <label for="address">Address:</label>
+        <input type="text" name="address" id="address" placeholder="Your address" required>
+        <br>
+        <input type="submit" value="Place an order">
+    </form>
+</body>
+</html>
