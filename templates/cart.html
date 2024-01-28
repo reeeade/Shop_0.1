@@ -73,6 +73,30 @@
             font-weight: bold;
             margin-top: 20px;
         }
+
+        .cart-buttons {
+            margin-top: 20px;
+        }
+
+        .cart-button {
+            width: 80px;
+            padding: 10px;
+            border: 1px solid darkgreen;
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 2px;
+            font-weight: bold;
+            color: white;
+            background-color: darkgreen;
+            cursor: pointer;
+        }
+
+        .cart-button:hover {
+            background-color: #006400;
+        }
+        .wider-button {
+        width: 250px; /* Adjust the width to your preference */
+    }
     </style>
 </head>
 <body>
@@ -110,13 +134,13 @@
                 <form action="/shop/cart/update" method="post">
                     <input type="hidden" name="item_id" value="{{ item.item_id }}">
                     <label>
-                        <input type="number" name="quantity" value="{{ item.quantity }}">
+                        <input type="number" name="quantity" id="quantity" value="{{ item.quantity }}">
                     </label>
-                    <input style="color: darkgreen" type="submit" value="Update">
+                    <input type="submit" class="cart-button" value="Update">
                 </form>
                 <form action="/shop/cart/delete" method="post">
                     <input type="hidden" name="item_id" value="{{ item.item_id }}">
-                    <input style="color: darkred" type="submit" value="Delete">
+                    <input type="submit" class="cart-button" style="background-color: darkred;" value="Delete">
                 </form>
             </div>
         {% endfor %}
@@ -124,6 +148,12 @@
     <div class="cart-total">
         Total: {{ total_cart_amount }} грн.
     </div>
+    <div class="cart-buttons">
+    <form action="/shop/checkout" method="GET" style="display: inline-block;">
+        <input type="submit" class="cart-button wider-button" style="background-color: darkblue;" value="Proceed to Checkout">
+    </form>
+    </div>
+
 {% else %}
     <p style="color: red">Your cart is empty</p>
 {% endif %}
