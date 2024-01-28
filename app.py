@@ -182,6 +182,8 @@ def get_all_sorted_items():
              join(models.Category, models.Items.category_id == models.Category.category_id))
     categories = models.Category.query.order_by(models.Category.category_name).all()
     statuses = models.ItemStatus.query.order_by(models.ItemStatus.status_name).all()
+    query_categories = []
+    query_statuses = []
     query_string = request.query_string.decode()
     if query_string:
         query_categories = request.args.getlist('category_name')
@@ -190,10 +192,19 @@ def get_all_sorted_items():
             items = items.filter(models.Category.category_name.in_(query_categories))
         if query_statuses:
             items = items.filter(models.ItemStatus.status_name.in_(query_statuses))
+        if request.args.get('min_price'):
+            items = items.filter(models.Items.price >= int(request.args.get('min_price')))
+        if request.args.get('max_price'):
+            items = items.filter(models.Items.price <= int(request.args.get('max_price')))
+        if request.args.get('item_name'):
+            items = items.filter(models.Items.name.ilike(f'%{request.args.get("item_name")}%'))
     items = items.all()
     items_list = [{**item[0].to_dict(), **item[1].to_dict(), **item[2].to_dict()} for item in items]
 
-    return render_template('items.html', items=items_list, user=user, categories=categories, statuses=statuses)
+    return render_template('items.html', items=items_list, user=user, categories=categories, statuses=statuses,
+                           selected_categories=query_categories, selected_statuses=query_statuses,
+                           min_price=request.args.get('min_price'), max_price=request.args.get('max_price'),
+                           item_name=request.args.get('item_name'))
 
 
 @app.route('/shop/search', methods=['POST'])
@@ -232,10 +243,12 @@ def add_cart():
             user_info = models.User.query.filter_by(login=current_user).first()
             for item in user_cart:
                 item['total_price'] = item['price'] * int(item['quantity'])
+            total_cart_amount = sum([item['total_price'] for item in user_cart])
             return render_template('cart.html',
                                    current_user=current_user,
                                    user_cart=user_cart,
-                                   user_info=user_info)
+                                   user_info=user_info,
+                                   total_cart_amount=total_cart_amount)
     else:
         return redirect('/login')
 
@@ -385,16 +398,26 @@ def get_update_user():
     return render_template('update_user.html', current_user=current_user)
 
 
-@app.route('/shop/compare/<cmp_id>', methods=["GET", "PUT"])
+@app.route('/shop/compare/<cmp_id>', methods=["GET", "POST"])
 def compare(cmp_id):
     if request.method == 'GET':
+        database.init_db()
+        compare_items = (database.db_session.query(models.CompareItems, models.Items).
+                         filter(models.CompareItems.id == cmp_id).
+                         join(models.Items, models.Items.item_id == models.CompareItems.item_id))
+        items_list = [{**item[0].to_dict(), **item[1].to_dict()} for item in compare_items]
         return f"This is the comparison with id {cmp_id}"
     else:
         return f"Let's change your comparison with id {cmp_id}"
 
 
-@app.route('/shop/compare', methods=['POST'])
+@app.route('/shop/compare', methods=['POST', 'GET'])
 def add_compare():
+
+    user_cmp = models.CompareItems.query.distinct(models.CompareItems.id).filter(models.CompareItems.user_login ==
+                                                                                 session.get('login')).all()
+    user_cmp2 = (database.db_session.query(models.CompareItems).distinct(models.CompareItems.id).filter
+                 (models.CompareItems.user_login == session.get('login')).all())
     return f"Let's add comparison"
 
 

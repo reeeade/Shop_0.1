@@ -3,9 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <title>Update {{ current_user['name'] }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 200px;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #555;
+        }
+
+        input[type="date"] {
+            width: 200px; /* Adjust width for date input */
+        }
+
+        p {
+            margin-bottom: 20px;
+        }
+
+        input[type="submit"] {
+            color: darkgreen;
+        }
+    </style>
 </head>
-<p>Update your info</p>
 <body>
+    <p>Update your info</p>
     <form action="/user" method="POST">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" value="{{ current_user['name'] }}">
@@ -25,7 +68,7 @@
         <label for="birthday">Birthday:</label>
         <input type="date" id="birthday" name="birthday" value="{{ current_user['birth_date'] }}">
         <br>
-        <input style="color: darkgreen" type="submit" value="Update">
+        <input type="submit" style="color: darkgreen" value="Update">
     </form>
 </body>
 </html>

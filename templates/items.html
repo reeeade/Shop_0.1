@@ -3,77 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <title>Items</title>
-</head>
-{% if user %}
-    <p>Hello, {{ user['name'] }} {{ user['surname'] }}</p>
-    <form  action="/logout" method="GET" style="display: inline-block;">
-        <input style="color: darkred" type="submit" value="Logout">
-    </form>
-    <form action="/user" method="GET" style="display: inline-block;">
-        <input style="color: darkblue" type="submit" value="Profile">
-    </form>
-    <form action="/shop/cart" method="GET" style="display: inline-block;">
-        <input style="color: chocolate" type="submit" value="Cart">
-    </form>
-{% else %}
-    <p>Hello, Guest</p>
-    <form action="/login" method="GET">
-        <input type="submit" value="Log in">
-    </form>
-{% endif %}
-<body>
-<form action="">
     <style>
-    .column {
-        display: inline-block;
-        margin-right: 20px; /* Добавьте отступ между колонками, если нужно */
-    }
-</style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            position: relative;
+        }
 
-<div class="column">
-    <p>Choose a status</p>
-    {% for status in statuses %}
-        <label>
-            <input type="checkbox" id="status_name" name="status_name" value="{{ status.status_name }}">
-            {{ status.status_name }}
-        </label>
-        <br>
-    {% endfor %}
+        .top-right-menu {
+            position: absolute;
+            top: 50px; /* Adjusted top position for the buttons */
+            right: 10px;
+            text-align: right;
+        }
+
+        .user-greeting {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            margin-bottom: 20px; /* Increased margin-bottom */
+            z-index: 1; /* Ensure the user greeting is above buttons */
+        }
+
+        form {
+            display: inline-block;
+        }
+
+        .column {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        #item_name, #min_price, #max_price {
+            width: 300px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        #item_name:focus, #min_price:focus, #max_price:focus {
+            outline: none;
+            border-color: #555;
+        }
+
+        .italic-text {
+            font-style: italic;
+        }
+
+        .item-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center; /* Center items horizontally */
+        }
+
+        .item {
+            margin: 2.5%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .item p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="user-greeting">
+    {% if user %}
+        <p>Hello, {{ user['name'] }} {{ user['surname'] }}</p>
+    {% else %}
+        <p>Hello, Guest</p>
+    {% endif %}
 </div>
 
-<div class="column">
-    <p>Choose a category</p>
-    {% for category in categories %}
-        <label>
-            <input type="checkbox" id="category_name" name="category_name" value="{{ category.category_name }}">
-            {{ category.category_name }}
-        </label>
-        <br>
-    {% endfor %}
+<div class="top-right-menu">
+    {% if user %}
+        <form action="/logout" method="GET" style="display: inline-block;">
+            <input style="color: darkred" type="submit" value="Logout">
+        </form>
+        <form action="/user" method="GET" style="display: inline-block;">
+            <input style="color: darkblue" type="submit" value="Profile">
+        </form>
+        <form action="/shop/cart" method="GET" style="display: inline-block;">
+            <input style="color: chocolate" type="submit" value="Cart">
+        </form>
+    {% else %}
+        <form action="/login" method="GET" style="display: inline-block;">
+            <input type="submit" value="Log in">
+        </form>
+    {% endif %}
 </div>
-<br>
-    <label for="min_price"></label><input type="number" id="min_price" name="min_price" placeholder="Min">
-    <label for="max_price"></label><input type="number" id="max_price" name="max_price" placeholder="Max">
-    <input type="submit" value="Filter">
+
+<form action="" style="margin: 0 auto; margin-top: 60px;">
+    <div class="form-group">
+        <label for="item_name">Search items:</label>
+        <input type="text" name="item_name" id="item_name" placeholder="Enter search item name"
+               {% if item_name %} value="{{ item_name }}" {% endif %}>
+        <input type="submit" value="Search">
+    </div>
+
+    <div class="column form-group">
+        <p style="font-weight: bold">Choose a status:</p>
+        {% for status in statuses %}
+            <label class="italic-text">
+                <input type="checkbox" id="status_name" name="status_name" value="{{ status.status_name }}"
+                        {% if status.status_name in selected_statuses %} checked {% endif %}>
+                {{ status.status_name }}
+            </label>
+            <br>
+        {% endfor %}
+    </div>
+
+    <div class="column form-group">
+        <p style="font-weight: bold">Choose a category:</p>
+        {% for category in categories %}
+            <label class="italic-text">
+                <input type="checkbox" id="category_name" name="category_name" value="{{ category.category_name }}"
+                        {% if category.category_name in selected_categories %} checked {% endif %}>
+                {{ category.category_name }}
+            </label>
+            <br>
+        {% endfor %}
+    </div>
+
+    <div class="form-group">
+        <label for="min_price"></label><input type="number" id="min_price" name="min_price" placeholder="Min" value="{{ min_price }}">
+        <label for="max_price"></label><input type="number" id="max_price" name="max_price" placeholder="Max" value="{{ max_price }}">
+        <input type="submit" value="Filter">
+    </div>
 </form>
-<style>
-    .item-container {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .item {
-        margin: 2.5%; /* Уменьшил отступ между элементами */
-        padding: 10px; /* Добавил небольшие внутренние отступы для улучшенного визуального восприятия */
-        box-sizing: border-box; /* чтобы учесть отступы и границы при расчете ширины */
-        border: 1px solid #ddd; /* Добавил границу для разделения элементов */
-        text-align: center; /* Выравниваем текст по центру */
-    }
-
-    .item p {
-        margin: 5px 0; /* Уменьшил отступы вокруг текстовых элементов */
-    }
-</style>
 
 <div class="item-container">
     {% for item in items %}
@@ -93,8 +162,6 @@
         </div>
     {% endfor %}
 </div>
-
-
 
 </body>
 </html>

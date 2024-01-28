@@ -3,35 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <title>Cart</title>
-</head>
-{% if current_user %}
-<p>Hello, {{ user_info.name }} {{ user_info.surname }}</p>
-{% endif %}
-<form action="/logout" method="GET" style="display: inline-block;">
-    <input style="color: darkred" type="submit" value="Logout">
-</form>
-<form action="/shop/items" method="GET" style="display: inline-block;">
-    <input style="color: darkorange" type="submit" value="Back">
-</form>
-<body>
-{% if user_cart %}
-{% for item in user_cart %}
-<p>{{ item.name }} в количестве {{ item.quantity }} шт. Итоговая сумма по товару {{ item.total_price }} грн.</p>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            position: relative;
+        }
 
-<form action="/shop/cart/update" method="post" style="display: inline-block;">
-    <label for="quantity">кол-во:</label>
-    <input type="hidden" name="item_id" value="{{ item.item_id }}">
-    <input type="number" id="quantity" name="quantity" value="{{ item.quantity }}">
-    <input style="color: darkgreen" type="submit" value="update">
-</form>
-<form action="/shop/cart/delete" method="post" style="display: inline-block;">
-    <input type="hidden" name="item_id" value="{{ item.item_id }}">
-    <input style="color: darkred" type="submit" value="delete">
-</form>
-<br>
-{% endfor %}
-    {% else %}
+        .top-right-menu {
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            text-align: right;
+        }
+
+        .user-greeting {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            margin-bottom: 20px;
+            z-index: 1;
+        }
+
+        .cart-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: inline-block;
+        }
+
+        #quantity {
+            width: 50px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        #quantity:focus {
+            outline: none;
+            border-color: #555;
+        }
+
+        .cart-item-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .cart-item {
+            margin: 2.5%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .cart-item p {
+            margin: 5px 0;
+        }
+
+        .cart-total {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="user-greeting">
+    {% if current_user %}
+        <p>Hello, {{ user_info.name }} {{ user_info.surname }}</p>
+    {% endif %}
+</div>
+
+<div class="top-right-menu">
+    <form action="/logout" method="GET" style="display: inline-block;">
+        <input style="color: darkred" type="submit" value="Logout">
+    </form>
+    <form action="/shop/items" method="GET" style="display: inline-block;">
+        <input style="color: darkorange" type="submit" value="Back">
+    </form>
+</div>
+
+<div class="cart-header">
+    Your Cart
+</div>
+
+{% if user_cart %}
+    <div class="cart-item-container">
+        {% for item in user_cart %}
+            <div class="cart-item">
+                <p style="font-weight: bold; margin: 0;">{{ item.name }}</p>
+                <p>{{ item.description }}</p>
+                <p>{{ item.status_name }}</p>
+                <p>{{ item.category_name }}</p>
+                <p>{{ item.price }} грн.</p>
+                <p>Quantity: {{ item.quantity }}</p>
+                <p>Total: {{ item.total_price }} грн.</p>
+                <form action="/shop/cart/update" method="post">
+                    <input type="hidden" name="item_id" value="{{ item.item_id }}">
+                    <label>
+                        <input type="number" name="quantity" value="{{ item.quantity }}">
+                    </label>
+                    <input style="color: darkgreen" type="submit" value="Update">
+                </form>
+                <form action="/shop/cart/delete" method="post">
+                    <input type="hidden" name="item_id" value="{{ item.item_id }}">
+                    <input style="color: darkred" type="submit" value="Delete">
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="cart-total">
+        Total: {{ total_cart_amount }} грн.
+    </div>
+{% else %}
     <p style="color: red">Your cart is empty</p>
 {% endif %}
+
 </body>
 </html>

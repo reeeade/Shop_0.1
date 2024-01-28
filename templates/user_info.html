@@ -3,23 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ current_user['name'] }}'s profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            position: relative;
+        }
+
+        .top-right-menu {
+            position: absolute;
+            top: 50px; /* Adjusted top position for the buttons */
+            right: 10px;
+            text-align: right;
+        }
+
+        .user-greeting {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            margin-bottom: 20px;
+            z-index: 1;
+        }
+
+        form {
+            display: inline-block;
+            margin-bottom: 10px; /* Added margin to separate buttons */
+        }
+
+        .profile-info span {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
+
+<div class="user-greeting">
     <p>Welcome back, {{ current_user['name'] }}. It's your profile</p>
-    <span>Name: {{ current_user['name'] }}</span>
-    <br>
-    <span>Surname: {{ current_user['surname'] }}</span>
-    <br>
-    <span>Login: {{ current_user['login'] }}</span>
-    <br>
-    <span>Phone Number: {{ current_user['phone_number'] }}</span>
-    <br>
-    <span>Password: {{ current_user['password'] }}</span>
-    <br>
-    <span>Email: {{ current_user['email'] }}</span>
-    <br>
-    <span>Birthday: {{ current_user['birth_date'] }}</span>
-    <br>
+</div>
+
+<div class="top-right-menu">
     <form action="/user/update" method="GET" style="display: inline-block;">
         <input style="color: darkgreen" type="submit" value="Update">
     </form>
@@ -29,6 +52,17 @@
     <form action="/shop/items" method="GET" style="display: inline-block;">
         <input style="color: darkorange" type="submit" value="To shop">
     </form>
+</div>
+
+<div class="profile-info">
+    <span>Name: {{ current_user['name'] }}</span>
+    <span>Surname: {{ current_user['surname'] }}</span>
+    <span>Login: {{ current_user['login'] }}</span>
+    <span>Phone Number: {{ current_user['phone_number'] }}</span>
+    <span>Password: {{ current_user['password'] }}</span>
+    <span>Email: {{ current_user['email'] }}</span>
+    <span>Birthday: {{ current_user['birth_date'] }}</span>
+</div>
 
 </body>
 </html>

@@ -205,3 +205,20 @@ class OrderItem(Base):
 
     def __repr__(self):
         return self.to_dict()
+
+
+class CompareItems(Base):
+    __tablename__ = 'compare_items'
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+    name = Column(String(32), nullable=False)
+    user_login = Column(String(32), ForeignKey('users.login'), nullable=False)
+    item_id = Column(Integer, ForeignKey('items.item_id'), nullable=False)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'user_login': self.user_login,
+            'item_id': self.item_id
+        }
+
