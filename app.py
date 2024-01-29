@@ -310,7 +310,6 @@ def get_post_cart_order():
                                total_price=order_total_price)
 
 
-
 @app.route('/shop/favorites/<list_id>', methods=['GET', 'PUT'])
 def get_put_favorites(list_id):
     if request.method == 'PUT':
@@ -418,7 +417,7 @@ def compare(cmp_id):
         database.init_db()
         compare_items = (database.db_session.query(models.CompareItems, models.Items).
                          filter(models.CompareItems.id == cmp_id).
-                         join(models.Items, models.Items.item_id == models.CompareItems.item_id))
+                         join(models.Items, models.Items.item_id == models.CompareItems.item_id)).all()
         items_list = [{**item[0].to_dict(), **item[1].to_dict()} for item in compare_items]
         return f"This is the comparison with id {cmp_id}"
     else:
@@ -427,11 +426,28 @@ def compare(cmp_id):
 
 @app.route('/shop/compare', methods=['POST', 'GET'])
 def add_compare():
-    user_cmp = models.CompareItems.query.distinct(models.CompareItems.id).filter(models.CompareItems.user_login ==
-                                                                                 session.get('login')).all()
-    user_cmp2 = (database.db_session.query(models.CompareItems).distinct(models.CompareItems.id).filter
-                 (models.CompareItems.user_login == session.get('login')).all())
-    return f"Let's add comparison"
+    login = session.get('login')
+    database.init_db()
+    if request.method == 'POST':
+        item_id = request.form.get('item_id')
+        item_with_category = (database.db_session.query(models.Items, models.Category).
+                              filter(models.Items.item_id == item_id).
+                              join(models.Category, models.Category.category_id == models.Items.category_id)).first()
+        category_name = item_with_category[1].category_name
+        new_cmp = models.CompareItems(user_login=login, item_id=item_id, name=category_name)
+        item_in_cmp = models.CompareItems.query.filter_by(user_login=login, item_id=item_id).first()
+        if not item_in_cmp:
+            database.db_session.add(new_cmp)
+        database.db_session.commit()
+        return redirect('/shop/items')
+    else:
+        user_cmp = (database.db_session.query(models.CompareItems, models.Items, models.Category).
+                    filter(models.CompareItems.user_login == session.get('login')).
+                    join(models.Items, models.Items.item_id == models.CompareItems.item_id).
+                    join(models.Category, models.Category.category_id == models.Items.category_id).
+                    distinct(models.Category.category_name)).all()
+        user_cmp = [{**item[0].to_dict(), **item[1].to_dict(), **item[2].to_dict()} for item in user_cmp]
+        return render_template('compare_list.html', compares=user_cmp)
 
 
 if __name__ == '__main__':

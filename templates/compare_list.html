@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Compare</title>
+</head>
+<body>
+<p>Ваш список сравнения:</p>
+    {% for compare in compares %}
+    <a href="/shop/compare/{{ compare.category_name }}">{{ compare.category_name }}</a>
+    <br>
+    {% endfor %}
+</body>
+</html>
