@@ -11,18 +11,15 @@
         }
 
         .top-right-menu {
-            position: absolute;
-            top: 50px;
+            position: fixed;
+            top: 10px;
             right: 10px;
             text-align: right;
+            z-index: 2;
         }
 
         .user-greeting {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            margin-bottom: 20px;
-            z-index: 1;
+            margin-bottom: 5px;
         }
 
         form {
@@ -78,34 +75,36 @@
         }
 
         .cart-button {
-        width: 70px;
-        padding: 8px;
-        border: 1px solid darkgreen;
-        border-radius: 4px;
-        font-style: italic;
-        letter-spacing: 1px;
-        font-weight: bold;
-        font-size: 10px; /* Adjusted font size */
-        color: white;
-        background-color: darkgreen;
-        cursor: pointer;
-    }
+            width: 70px;
+            padding: 8px;
+            border: 1px solid darkgreen;
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 1px;
+            font-weight: bold;
+            font-size: 10px;
+            color: white;
+            background-color: darkgreen;
+            cursor: pointer;
+        }
+
         .cart-button-filter {
-        width: 70px;
-        padding: 8px;
-        border: 1px solid darkgreen;
-        border-radius: 4px;
-        font-style: italic;
-        letter-spacing: 1px;
-        font-weight: bold;
-        font-size: 14px; /* Adjusted font size */
-        color: white;
-        background-color: darkgreen;
-        cursor: pointer;
-    }
-    .cart-button:hover {
-        background-color: #006400;
-    }
+            width: 70px;
+            padding: 8px;
+            border: 1px solid darkgreen;
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 1px;
+            font-weight: bold;
+            font-size: 14px;
+            color: white;
+            background-color: darkgreen;
+            cursor: pointer;
+        }
+
+        .cart-button:hover {
+            background-color: #006400;
+        }
 
         .search-button {
             width: 80px;
@@ -123,10 +122,34 @@
         .search-button:hover {
             background-color: #00008B;
         }
+
         .form-container {
-        display: flex;
-        justify-content: space-around;
-    }
+            display: flex;
+            justify-content: space-around;
+        }
+
+        /* Added styles for top-right menu */
+        .top-right-menu form {
+            display: inline-block;
+        }
+
+        .top-right-menu input[type="submit"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 2px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .top-right-menu input[type="submit"]:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+            color: #000;
+        }
     </style>
 </head>
 <body>
@@ -149,6 +172,9 @@
         </form>
         <form action="/shop/cart" method="GET" style="display: inline-block;">
             <input style="color: chocolate" type="submit" value="Cart">
+        </form>
+        <form action="/shop/compare" method="GET">
+        <input type="submit" style="color: darkorange" value="Compare">
         </form>
     {% else %}
         <form action="/login" method="GET" style="display: inline-block;">

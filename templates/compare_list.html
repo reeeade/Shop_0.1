@@ -3,12 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <title>Compare</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .top-right-menu {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            text-align: right;
+            z-index: 2;
+        }
+
+        .center-content {
+            margin-top: 70px;
+        }
+
+        form {
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 2px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            width: 100px; /* Фиксированная ширина */
+            display: inline-block;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+            color: #000;
+        }
+
+        .user-greeting {
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 <body>
-<p>Ваш список сравнения:</p>
-    {% for compare in compares %}
-    <a href="/shop/compare/{{ compare.category_name }}">{{ compare.category_name }}</a>
-    <br>
-    {% endfor %}
+    <div class="top-right-menu">
+        {% if login %}
+            <p class="user-greeting">Hello, {{ user_info.name }} {{ user_info.surname }}</p>
+        {% endif %}
+        <form action="/logout" method="GET">
+            <input type="submit" value="Logout">
+        </form>
+        <form action="/shop/items" method="GET">
+            <input type="submit" value="Back">
+        </form>
+    </div>
+
+    <div class="center-content">
+        <p>Your comparison lists:</p>
+        {% if not compares %}<p style="color: red">No items to compare</p>{% endif %}
+        {% for compare in compares %}
+            <form action="/shop/compare/{{ compare.category_name }}" method="GET">
+                <input type="submit" value="{{ compare.category_name }}">
+            </form>
+            <br>
+        {% endfor %}
+    </div>
 </body>
 </html>

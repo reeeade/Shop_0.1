@@ -415,13 +415,31 @@ def get_update_user():
 def compare(cmp_id):
     if request.method == 'GET':
         database.init_db()
-        compare_items = (database.db_session.query(models.CompareItems, models.Items).
-                         filter(models.CompareItems.id == cmp_id).
-                         join(models.Items, models.Items.item_id == models.CompareItems.item_id)).all()
-        items_list = [{**item[0].to_dict(), **item[1].to_dict()} for item in compare_items]
-        return f"This is the comparison with id {cmp_id}"
+        compare_items = (database.db_session.
+                         query(models.CompareItems, models.Items, models.Category, models.ItemStatus).
+                         filter(models.CompareItems.name == cmp_id).
+                         join(models.Items, models.Items.item_id == models.CompareItems.item_id).
+                         join(models.Category, models.Category.category_id == models.Items.category_id).
+                         join(models.ItemStatus, models.ItemStatus.status_id == models.Items.status_id)).all()
+        items_list = [{**item[0].to_dict(), **item[1].to_dict(), **item[2].to_dict(), **item[3].to_dict()}
+                      for item in compare_items]
+        user_info = models.User.query.filter_by(login=session.get('login')).first()
+        return render_template('compare_items.html', login=session.get('login'),
+                               items=items_list, cmp_id=cmp_id, user_info=user_info)
     else:
         return f"Let's change your comparison with id {cmp_id}"
+
+
+@app.route('/shop/compare/<cmp_id>/delete', methods=["POST"])
+def delete_item_in_compare(cmp_id):
+    login = session.get('login')
+    database.init_db()
+    item_id = request.form.get('item_id')
+    item_in_cmp = models.CompareItems.query.filter_by(user_login=login, item_id=item_id).first()
+    if item_in_cmp:
+        database.db_session.delete(item_in_cmp)
+    database.db_session.commit()
+    return redirect(f'/shop/compare/{cmp_id}')
 
 
 @app.route('/shop/compare', methods=['POST', 'GET'])
@@ -441,13 +459,14 @@ def add_compare():
         database.db_session.commit()
         return redirect('/shop/items')
     else:
+        user_info = models.User.query.filter_by(login=session.get('login')).first()
         user_cmp = (database.db_session.query(models.CompareItems, models.Items, models.Category).
                     filter(models.CompareItems.user_login == session.get('login')).
                     join(models.Items, models.Items.item_id == models.CompareItems.item_id).
                     join(models.Category, models.Category.category_id == models.Items.category_id).
                     distinct(models.Category.category_name)).all()
         user_cmp = [{**item[0].to_dict(), **item[1].to_dict(), **item[2].to_dict()} for item in user_cmp]
-        return render_template('compare_list.html', compares=user_cmp)
+        return render_template('compare_list.html', compares=user_cmp, login=login, user_info=user_info)
 
 
 if __name__ == '__main__':

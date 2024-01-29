@@ -11,46 +11,66 @@
         }
 
         .top-right-menu {
-            position: absolute;
-            top: 50px; /* Adjusted top position for the buttons */
+            position: fixed;
+            top: 10px;
             right: 10px;
             text-align: right;
+            z-index: 2;
         }
 
         .user-greeting {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 50%; /* Позиционируем относительно вертикальной середины */
+            left: 50%; /* Позиционируем относительно горизонтальной середины */
+            transform: translate(-50%, -50%); /* Центрируем относительно центра экрана */
             margin-bottom: 20px;
             z-index: 1;
         }
 
         form {
             display: inline-block;
-            margin-bottom: 10px; /* Added margin to separate buttons */
+            margin-bottom: 10px;
         }
 
         .profile-info span {
             display: block;
             margin-bottom: 10px;
         }
+
+        input[type="submit"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 2px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+            color: #000;
+        }
     </style>
 </head>
 <body>
 
-<div class="user-greeting">
+<div >
     <p>Welcome back, {{ current_user['name'] }}. It's your profile</p>
 </div>
 
 <div class="top-right-menu">
     <form action="/user/update" method="GET" style="display: inline-block;">
-        <input style="color: darkgreen" type="submit" value="Update">
+        <input type="submit" style="color: darkgreen" value="Update">
     </form>
     <form action="/logout" method="GET" style="display: inline-block;">
-        <input style="color: darkred" type="submit" value="Logout">
+        <input type="submit" style="color: darkred" value="Logout">
     </form>
     <form action="/shop/items" method="GET" style="display: inline-block;">
-        <input style="color: darkorange" type="submit" value="To shop">
+        <input type="submit" style="color: darkorange" value="To shop">
     </form>
 </div>
 

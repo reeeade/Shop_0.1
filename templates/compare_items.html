@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Compare {{ cmp_id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            position: relative;
+        }
+
+        .top-right-menu {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            text-align: right;
+            z-index: 2;
+        }
+
+        .user-greeting {
+            margin-bottom: 5px;
+        }
+
+        .compare-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .compare-item-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .compare-item {
+            margin: 2.5%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .compare-item p {
+            margin: 5px 0;
+        }
+
+        .compare-buttons {
+            margin-top: 20px;
+        }
+
+        input[type="submit"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 2px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            width: 80px;
+            display: inline-block;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+            color: #000;
+        }
+
+        .compare-button,
+        .cart-button {
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 2px;
+            font-weight: bold;
+            color: white; /* Белый цвет букв */
+            cursor: pointer;
+            width: 80px;
+            display: inline-block;
+        }
+
+        .compare-button {
+            border: 1px solid darkblue;
+            background-color: darkblue;
+        }
+
+        .cart-button {
+            border: 1px solid darkgreen;
+            background-color: darkgreen;
+        }
+
+        .compare-button:hover {
+            background-color: #00008B;
+        }
+
+        .wider-button {
+            width: 250px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-right-menu">
+    <div class="user-greeting">
+        {% if login %}
+            <p>Hello, {{ user_info.name }} {{ user_info.surname }}</p>
+        {% endif %}
+    </div>
+
+    <form action="/logout" method="GET" style="display: inline-block;">
+        <input type="submit" value="Logout">
+    </form>
+    <form action="/shop/compare" method="GET" style="display: inline-block;">
+        <input type="submit" value="Back">
+    </form>
+</div>
+
+<div class="compare-header">
+    Compare {{ cmp_id }}
+    <br>
+</div>
+
+{% if items %}
+    <div class="compare-item-container">
+        {% for item in items %}
+            <div class="compare-item">
+                <p style="font-weight: bold; margin: 0;">{{ item.name }}</p>
+                <p>{{ item.description }}</p>
+                <p>{{ item.status_name }}</p>
+                <p>{{ item.category_name }}</p>
+                <p>{{ item.price }} грн.</p>
+                <form action="/shop/compare/{{ cmp_id }}/delete" method="post">
+                    <input type="hidden" id="item_id" name="item_id" value="{{ item.item_id }}">
+                    <input type="submit" class="cart-button" style="background-color: darkred;" value="Delete">
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p style="color: red">No items to compare</p>
+{% endif %}
+
+</body>
+</html>
