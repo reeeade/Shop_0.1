@@ -117,22 +117,25 @@
         .wider-button {
             width: 250px;
         }
+        .menu-button {
+            width: 100px;
+        }
     </style>
 </head>
 <body>
 
 <div class="user-greeting">
     {% if current_user %}
-        <p>Hello, {{ user_info.name }} {{ user_info.surname }}</p>
+        <p>{{ user_info.name }} {{ user_info.surname }}</p>
     {% endif %}
 </div>
 
 <div class="top-right-menu">
     <form action="/logout" method="GET" style="display: inline-block;">
-        <input type="submit" class="cart-button" style="color: darkred;" value="Logout">
+        <input type="submit" class="cart-button menu-button" style="color: darkred;" value="Logout">
     </form>
     <form action="/shop/items" method="GET" style="display: inline-block;">
-        <input type="submit" class="cart-button" style="color: darkorange;" value="Back">
+        <input type="submit" class="cart-button menu-button" style="color: darkorange;" value="Back">
     </form>
 </div>
 

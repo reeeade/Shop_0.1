@@ -7,7 +7,7 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            position: relative;
+            margin-top: 10px;
         }
 
         .top-right-menu {
@@ -18,14 +18,49 @@
             z-index: 2;
         }
 
-        .user-greeting {
-            margin-bottom: 5px;
+        .center-content {
+            margin-top: 120px;
         }
 
-        .compare-header {
-            font-size: 24px;
+        form {
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 2px;
             font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            width: 100px;
+            display: inline-block;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+            color: #000;
+        }
+
+        .user-greeting {
+            position: absolute;
+            top: 34px;
+            left: 50%;
+            transform: translateX(-50%);
             margin-bottom: 20px;
+            z-index: 1;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        .red-text {
+            color: red;
         }
 
         .compare-item-container {
@@ -46,102 +81,65 @@
             margin: 5px 0;
         }
 
-        .compare-buttons {
-            margin-top: 20px;
-        }
+        .button-common {
+            width: 70px;
+            padding: 8px;
 
-        input[type="submit"] {
-            padding: 10px;
-            border: 1px solid #ccc;
             border-radius: 4px;
             font-style: italic;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             font-weight: bold;
+            font-size: 10px;
+            color: white;
+
             cursor: pointer;
-            text-decoration: none;
-            color: #333;
-            width: 80px;
-            display: inline-block;
         }
 
-        input[type="submit"]:hover {
-            background-color: #f0f0f0;
-            border-color: #999;
-            color: #000;
-        }
 
-        .compare-button,
-        .cart-button {
-            border-radius: 4px;
-            font-style: italic;
-            letter-spacing: 2px;
-            font-weight: bold;
-            color: white; /* Белый цвет букв */
-            cursor: pointer;
-            width: 80px;
-            display: inline-block;
-        }
 
-        .compare-button {
-            border: 1px solid darkblue;
-            background-color: darkblue;
-        }
-
-        .cart-button {
-            border: 1px solid darkgreen;
-            background-color: darkgreen;
-        }
-
-        .compare-button:hover {
-            background-color: #00008B;
-        }
-
-        .wider-button {
-            width: 250px;
-        }
     </style>
 </head>
 <body>
 
-<div class="top-right-menu">
-    <div class="user-greeting">
-        {% if login %}
-            <p>Hello, {{ user_info.name }} {{ user_info.surname }}</p>
-        {% endif %}
-    </div>
+<div class="user-greeting">
+    {% if user_info %}
+        <p>Hello, {{ user_info.name }} {{ user_info.surname }}</p>
+    {% endif %}
+</div>
 
-    <form action="/logout" method="GET" style="display: inline-block;">
-        <input type="submit" value="Logout">
+<div class="top-right-menu">
+    <form action="/logout" method="GET">
+        <input type="submit" class="cart-button" style="color: darkred;" value="Logout">
     </form>
-    <form action="/shop/compare" method="GET" style="display: inline-block;">
-        <input type="submit" value="Back">
+    <form action="/shop/compare" method="GET">
+        <input type="submit" class="cart-button" style="color: darkorange;" value="Back">
     </form>
 </div>
 
-<div class="compare-header">
+<div class="center-content">
     Compare {{ cmp_id }}
     <br>
-</div>
 
-{% if items %}
-    <div class="compare-item-container">
-        {% for item in items %}
-            <div class="compare-item">
-                <p style="font-weight: bold; margin: 0;">{{ item.name }}</p>
-                <p>{{ item.description }}</p>
-                <p>{{ item.status_name }}</p>
-                <p>{{ item.category_name }}</p>
-                <p>{{ item.price }} грн.</p>
-                <form action="/shop/compare/{{ cmp_id }}/delete" method="post">
-                    <input type="hidden" id="item_id" name="item_id" value="{{ item.item_id }}">
-                    <input type="submit" class="cart-button" style="background-color: darkred;" value="Delete">
-                </form>
-            </div>
-        {% endfor %}
-    </div>
-{% else %}
-    <p style="color: red">No items to compare</p>
-{% endif %}
+    {% if items %}
+        <div class="compare-item-container">
+            {% for item in items %}
+                <div class="compare-item">
+                    <p>{{ item.name }}</p>
+                    <p>{{ item.description }}</p>
+                    <p>{{ item.status_name }}</p>
+                    <p>{{ item.category_name }}</p>
+                    <p>{{ item.price }} грн.</p>
+                    <form action="/shop/compare/{{ cmp_id }}/delete" method="post">
+                        <input type="hidden" id="item_id" name="item_id" value="{{ item.item_id }}">
+                        <input type="submit" class="button-common" style="background-color: darkred;" value="Delete">
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="red-text">No items to compare</p>
+    {% endif %}
+</div>
 
 </body>
 </html>

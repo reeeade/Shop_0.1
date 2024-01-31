@@ -20,6 +20,11 @@
 
         .user-greeting {
             margin-bottom: 5px;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
         }
 
         form {
@@ -73,7 +78,25 @@
         .item p {
             margin: 5px 0;
         }
+        .menu-button {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-style: italic;
+            letter-spacing: 2px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            display: inline-block;
+            width: 100px;
+        }
 
+        .menu-button:hover {
+            background-color: #f0f0f0;
+            border-color: #999;
+            color: #000;
+        }
         .cart-button {
             width: 70px;
             padding: 8px;
@@ -165,20 +188,20 @@
 <div class="top-right-menu">
     {% if user %}
         <form action="/logout" method="GET" style="display: inline-block;">
-            <input style="color: darkred" type="submit" value="Logout">
+            <input style="color: darkred" class="menu-button" type="submit" value="Logout">
         </form>
         <form action="/user" method="GET" style="display: inline-block;">
-            <input style="color: darkblue" type="submit" value="Profile">
+            <input style="color: darkblue" class="menu-button" type="submit" value="Profile">
         </form>
         <form action="/shop/cart" method="GET" style="display: inline-block;">
-            <input style="color: chocolate" type="submit" value="Cart">
+            <input style="color: chocolate" class="menu-button" type="submit" value="Cart">
         </form>
         <form action="/shop/compare" method="GET">
-        <input type="submit" style="color: darkorange" value="Compare">
+        <input type="submit" style="color: darkorange" class="menu-button" value="Compare">
         </form>
     {% else %}
         <form action="/login" method="GET" style="display: inline-block;">
-            <input type="submit" value="Log in">
+            <input type="submit" class="menu-button" value="Log in">
         </form>
     {% endif %}
 </div>

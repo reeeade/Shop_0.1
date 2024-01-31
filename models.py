@@ -195,6 +195,7 @@ class OrderItem(Base):
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     order_id = Column(Integer, ForeignKey('orders.order_id'), nullable=False)
     item_id = Column(Integer, ForeignKey('items.item_id'), nullable=False)
+    quantity = Column(Integer, nullable=False)
 
     def to_dict(self):
         return {

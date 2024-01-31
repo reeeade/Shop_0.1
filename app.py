@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, session
 from flask import request
 import sqlite3
 from datetime import datetime
-
+from task import send_email
 import database
 import models
 
@@ -299,6 +299,12 @@ def get_post_cart_order():
         new_order = models.Order(user_login=user_login, address=address, order_total_price=order_total_price, status=1)
         database.db_session.add(new_order)
         database.db_session.commit()
+        for item in user_cart:
+            new_order_item = models.OrderItem(order_id=new_order.order_id, item_id=item['item_id'],
+                                              quantity=item['quantity'])
+            database.db_session.add(new_order_item)
+        database.db_session.commit()
+        send_email.delay(user_login, new_order.order_id)
         message = 'Your order has been placed successfully!'
         deleted_cart = models.Cart.query.filter_by(user_login=user_login).all()
         for cart_item in deleted_cart:
@@ -470,4 +476,4 @@ def add_compare():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5002, debug=True)

@@ -7,7 +7,6 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            position: relative;
             margin-top: 10px;
         }
 
@@ -20,15 +19,15 @@
         }
 
         .center-content {
-            margin-top: 70px;
+            text-align: center;
+            margin-top: 120px; /* Увеличен отступ сверху */
         }
 
         form {
             display: inline-block;
-            margin-bottom: 10px;
         }
 
-        input[type="submit"] {
+        .menu-button {
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -38,42 +37,84 @@
             cursor: pointer;
             text-decoration: none;
             color: #333;
-            width: 100px; /* Фиксированная ширина */
             display: inline-block;
+            width: 100px;
+            margin-bottom: 10px; /* Добавлено для создания отступов между кнопками в верхнем меню */
         }
 
-        input[type="submit"]:hover {
+        .menu-button:hover {
             background-color: #f0f0f0;
             border-color: #999;
             color: #000;
         }
 
+        .category-button {
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-style: italic;
+    letter-spacing: 2px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+    width: 150px;
+    height: 150px;
+    margin-top: 20px;
+    margin-inline: 30px;
+    display: inline-block;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    font-size: 20px;
+}
+
+.category-button:hover {
+    background-color: #f0f0f0;
+    border-color: #999;
+    color: #000;
+}
+
+
+
         .user-greeting {
-            margin-bottom: 5px;
+            position: fixed;
+            top: 34px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        .red-text {
+            color: red;
         }
     </style>
 </head>
 <body>
-    <div class="top-right-menu">
-        {% if login %}
-            <p class="user-greeting">Hello, {{ user_info.name }} {{ user_info.surname }}</p>
+    <div class="user-greeting">
+        {% if user_info %}
+            <p>Hello, {{ user_info.name }} {{ user_info.surname }}</p>
         {% endif %}
+    </div>
+
+    <div class="top-right-menu">
         <form action="/logout" method="GET">
-            <input type="submit" value="Logout">
+            <input type="submit" class="menu-button" style="color: darkred;" value="Logout">
         </form>
         <form action="/shop/items" method="GET">
-            <input type="submit" value="Back">
+            <input type="submit" class="menu-button" style="color: darkorange;" value="Back">
         </form>
     </div>
 
     <div class="center-content">
         <p>Your comparison lists:</p>
-        {% if not compares %}<p style="color: red">No items to compare</p>{% endif %}
+        {% if not compares %}<p class="red-text">No items to compare</p>{% endif %}
         {% for compare in compares %}
             <form action="/shop/compare/{{ compare.category_name }}" method="GET">
-                <input type="submit" value="{{ compare.category_name }}">
+                <input type="submit" class="category-button" value="{{ compare.category_name }}">
             </form>
-            <br>
         {% endfor %}
     </div>
 </body>

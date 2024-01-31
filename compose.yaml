@@ -1,18 +1,38 @@
 services:
   server:
-    build:
-      context: .
+    build: .
     ports:
-      - 5000:5000
+      - 5002:5002
     environment:
       - DB_HOSTNAME=db
       - DB_NAME=postgres
       - DB_USERNAME=postgres
       - DB_PASSWORD=mypassword
       - DB_PORT=5432
+      - EMAIL_PASS=lapf ybze wijy wcee
+      - EMAIL_USER=reeeade@gmail.com
+      - RABBIT_HOST=mq
     depends_on:
       - db
+      - mq
     command: python app.py
+
+  celery:
+    build: .
+    environment:
+      - DB_HOSTNAME=db
+      - DB_NAME=postgres
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=mypassword
+      - DB_PORT=5432
+      - EMAIL_PASS=some password
+      - EMAIL_USER=some email
+      - RABBIT_HOST=mq
+    depends_on:
+      - db
+      - mq
+    command: celery -A task worker --loglevel=INFO --purge --pool=solo
+
   db:
     image: postgres
     restart: always
@@ -21,3 +41,11 @@ services:
     ports:
       - 5432:5432
     hostname: db
+
+  mq:
+    image: rabbitmq:3-management
+    restart: always
+    ports:
+      - 15672:15672
+      - 5672:5672
+    hostname: mq
